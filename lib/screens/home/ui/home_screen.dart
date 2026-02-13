@@ -1,0 +1,154 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:moona/screens/home/ui/widgets/categories_widget.dart';
+import 'package:moona/screens/home/ui/widgets/home_top_widget.dart';
+import 'package:moona/screens/home/ui/widgets/location_row.dart';
+import 'package:moona/screens/home/ui/widgets/products_horizontal_list.dart';
+import 'package:moona/screens/home/ui/widgets/promo_cards.dart';
+import 'package:moona/screens/home/ui/widgets/search_bar_widget.dart';
+import 'package:moona/screens/home/ui/widgets/section_tile.dart';
+import 'package:moona/screens/products/ui/products_screen.dart';
+import 'package:moona/utils/helper/navigation/push_to.dart';
+
+import '../../../state-managment/bloc/auth/auth_cubit.dart';
+import '../../addresses/presentation/cubit/addresses_cubit.dart';
+
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    if (AuthCubit.user != null) {
+      context.read<AddressesCubit>().loadAddresses();
+    }
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomScrollView(
+      slivers: [
+        SliverToBoxAdapter(
+          child: ColoredBox(
+            color: Colors.white,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 130,
+                  height: 70,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('assets/images/logo.png'),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (AuthCubit.user != null) LocationRow(),
+        SliverPersistentHeader(
+          pinned: true,
+          delegate: _PinnedSearchDelegate(child: SearchBarWidget()),
+        ),
+
+        HomeTopWidget(),
+
+        SliverToBoxAdapter(
+          child: SectionHeader(
+            title: 'احتياجاتك اليومية',
+            onTap: () {
+              pushTo(
+                context,
+                ProductsScreen(
+                  categoryId: 1,
+                  title: 'احتياجاتك اليومية',
+                  daily: true,
+                  hasDiscount: false,
+                ),
+              );
+            },
+          ),
+        ),
+        ProductHorizontalList(daily: true, hasDiscount: false),
+
+        SliverToBoxAdapter(child: SizedBox(height: 12)),
+        SliverToBoxAdapter(
+          child: ColoredBox(
+            color: Colors.white,
+            child: Column(
+              children: [
+                SectionHeader(title: 'تسوق أكثر', onTap: () {}),
+                PromoCards(),
+              ],
+            ),
+          ),
+        ),
+        SliverToBoxAdapter(
+          child: ColoredBox(
+            color: Colors.white,
+            child: Column(
+              children: [
+                SectionHeader(title: 'الفئات', onTap: () {}),
+                CategoriesHorizontalGrid(),
+              ],
+            ),
+          ),
+        ),
+
+        SliverToBoxAdapter(
+          child: SectionHeader(
+            title: 'عروض البقالة',
+            onTap: () {
+              pushTo(
+                context,
+                ProductsScreen(
+                  categoryId: 1,
+                  title: 'عروض البقالة',
+                  daily: false,
+                  hasDiscount: true,
+                ),
+              );
+            },
+          ),
+        ),
+        ProductHorizontalList(daily: false, hasDiscount: true),
+        SliverToBoxAdapter(child: SizedBox(height: 100)),
+      ],
+    );
+  }
+}
+
+class _PinnedSearchDelegate extends SliverPersistentHeaderDelegate {
+  final Widget child;
+
+  _PinnedSearchDelegate({required this.child});
+
+  @override
+  double get minExtent => 82;
+
+  @override
+  double get maxExtent => 82;
+
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    return child;
+  }
+
+  @override
+  bool shouldRebuild(covariant _PinnedSearchDelegate oldDelegate) {
+    return oldDelegate.child != child;
+  }
+}
