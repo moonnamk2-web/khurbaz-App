@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../../utils/helper/navigation/push_to.dart';
 import '../../../../../utils/resources/app_colors.dart';
@@ -49,7 +48,8 @@ class _AddressesDialogState extends State<AddressesDialog> {
                   children: [
                     Text(
                       'عناوين التوصيل',
-                      style: GoogleFonts.cairo(
+                      style: TextStyle(
+                        fontFamily: 'DINNextLT',
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
                       ),
@@ -99,7 +99,8 @@ class _AddressesDialogState extends State<AddressesDialog> {
                           return Center(
                             child: Text(
                               'لا توجد عناوين محفوظة',
-                              style: GoogleFonts.cairo(
+                              style: TextStyle(
+                                fontFamily: 'DINNextLT',
                                 fontSize: 14,
                                 color: kSubtitleColor,
                               ),
@@ -146,7 +147,7 @@ class _ErrorState extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             message,
-            style: GoogleFonts.cairo(fontSize: 14),
+            style: TextStyle(fontFamily: 'DINNextLT', fontSize: 14),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),

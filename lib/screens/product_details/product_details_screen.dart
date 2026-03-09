@@ -6,6 +6,7 @@ import 'package:moona/utils/widgets/cach_network_image_widget.dart';
 import '../../managers/server/cart/cart_api.dart';
 import '../../managers/server/products/products_api.dart';
 import '../../models/product_model.dart';
+import '../../utils/network/network_routes.dart';
 import '../cart/ui/cart_screen.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
@@ -149,7 +150,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(24),
                                 child: CacheNetworkImageWidget(
-                                  url: img,
+                                  url: productsImagePathUrl + img,
                                   width: double.infinity,
                                 ),
                               ),
@@ -186,7 +187,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(8),
                                       child: CacheNetworkImageWidget(
-                                        url: images[i],
+                                        url: productsImagePathUrl + images[i],
                                       ),
                                     ),
                                   ),

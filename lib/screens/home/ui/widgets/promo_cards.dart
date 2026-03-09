@@ -1,34 +1,79 @@
-import 'package:flutter/material.dart';
+import 'dart:convert';
 
-class PromoCards extends StatelessWidget {
-  const PromoCards({super.key});
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:moona/utils/helper/navigation/push_to.dart';
+import 'package:moona/utils/network/network_routes.dart';
+
+import '../../../../models/sub_category_model.dart';
+import '../../../products/ui/products_screen.dart';
+
+class SubCategoriesBanners extends StatefulWidget {
+  const SubCategoriesBanners({super.key});
+
+  @override
+  State<SubCategoriesBanners> createState() => _SubCategoriesBannersState();
+}
+
+class _SubCategoriesBannersState extends State<SubCategoriesBanners> {
+  List<SubCategoryModel> banners = [];
+  bool loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchBanners();
+  }
+
+  Future<void> fetchBanners() async {
+    try {
+      final response = await http.get(
+        Uri.parse("$baseUrl/sub-categories-banners"),
+      );
+      print('====fetchBanners ${response.body}');
+
+      final data = jsonDecode(response.body);
+
+      if (data['status'] == true) {
+        final List list = data['banners'];
+
+        banners = list.map((e) => SubCategoryModel.fromJson(e)).toList();
+      }
+    } catch (e) {
+      banners = [];
+    }
+
+    setState(() => loading = false);
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (loading) {
+      return const SizedBox(
+        height: 220,
+        child: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (banners.isEmpty) return const SizedBox();
+
     return SizedBox(
       height: 220,
       child: ListView.separated(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         scrollDirection: Axis.horizontal,
-        itemCount: 2,
+        itemCount: banners.length,
         separatorBuilder: (_, __) => const SizedBox(width: 12),
         itemBuilder: (context, index) {
-          final items = [
-            const PromoCard(
-              title: 'منتجات جديدة',
-              image:
-                  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRBBxSTXBvCjJawBuVkQmgrcLd84JOTJlqXpg&s',
-            ),
-            const PromoCard(
-              title: 'نظافة المنزل',
-              image:
-                  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRBBxSTXBvCjJawBuVkQmgrcLd84JOTJlqXpg&s',
-            ),
-          ];
+          final banner = banners[index];
 
           return SizedBox(
             width: MediaQuery.of(context).size.width * 0.75,
-            child: items[index],
+            child: PromoCard(
+              categoryId: banner.categoryId,
+              title: banner.arName,
+              image: banner.homeBanner ?? banner.imageUrl,
+            ),
           );
         },
       ),
@@ -37,47 +82,64 @@ class PromoCards extends StatelessWidget {
 }
 
 class PromoCard extends StatelessWidget {
+  final int categoryId;
   final String title;
   final String image;
 
-  const PromoCard({super.key, required this.title, required this.image});
+  const PromoCard({
+    super.key,
+    required this.title,
+    required this.image,
+    required this.categoryId,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(22),
-      child: Stack(
-        children: [
-          Image.network(
-            image,
-            height: 220,
-            width: double.infinity,
-            fit: BoxFit.cover,
-          ),
-          Container(
-            height: 220,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Colors.black.withOpacity(.4), Colors.transparent],
-                begin: Alignment.bottomCenter,
-                end: Alignment.topCenter,
+    return GestureDetector(
+      onTap: () => pushTo(
+        context,
+        ProductsScreen(
+          categoryId: categoryId,
+          daily: false,
+          hasDiscount: false,
+          title: '',
+        ),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(22),
+        child: Stack(
+          children: [
+            Image.network(
+              categoriesImagePathUrl + image,
+              height: 220,
+              width: double.infinity,
+              fit: BoxFit.cover,
+            ),
+            Container(
+              height: 220,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.black.withOpacity(.4), Colors.transparent],
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                ),
               ),
             ),
-          ),
-          Positioned(
-            bottom: 16,
-            left: 16,
-            right: 16,
-            child: Text(
-              title,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
+            Positioned(
+              bottom: 16,
+              left: 16,
+              right: 16,
+              child: Text(
+                title,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

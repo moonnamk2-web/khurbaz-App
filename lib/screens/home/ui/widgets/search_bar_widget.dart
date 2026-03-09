@@ -23,13 +23,6 @@ class SearchBarWidget extends StatelessWidget {
             decoration: BoxDecoration(
               color: lightGreen,
               borderRadius: BorderRadius.circular(14),
-              // boxShadow: [
-              //   BoxShadow(
-              //     color: kMainColor.withOpacity(0.25),
-              //     blurRadius: 12,
-              //     offset: const Offset(0, 2),
-              //   ),
-              // ],
             ),
             child: Row(
               children: [
@@ -38,7 +31,8 @@ class SearchBarWidget extends StatelessWidget {
                 Spacer(),
                 Text(
                   'البحث عن منتجات',
-                  style: GoogleFonts.cairo(
+                  style: TextStyle(
+                    fontFamily: 'DINNextLT',
                     color: kMainColor,
                     fontWeight: FontWeight.w600,
                   ),

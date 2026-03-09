@@ -180,7 +180,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     loading = true;
                                   });
                                   dynamic result = await authCubit.register(
-                                    isGust: false,
                                     phoneNumber:
                                         "966${_phoneNumberController.text}",
                                     fullName: _fullNameController.text,

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:moona/models/product_model.dart';
+import 'package:moona/screens/auth/uis/screens/login_screen.dart';
 import 'package:moona/utils/helper/navigation/push_to.dart';
 import 'package:moona/utils/resources/app_colors.dart';
 
 import '../../../managers/server/cart/cart_api.dart';
+import '../../../state-managment/bloc/auth/auth_cubit.dart';
 import '../../checkout/checkout_screen.dart';
 import '../../products/ui/widgets/product_tile.dart';
 
@@ -121,7 +123,11 @@ class _CartScreenState extends State<CartScreen> {
                     height: 54,
                     child: ElevatedButton(
                       onPressed: () {
-                        pushTo(context, const CheckoutScreen());
+                        if (AuthCubit.user?.phoneNumber == null) {
+                          pushTo(context, const LoginScreen());
+                        } else {
+                          pushTo(context, const CheckoutScreen());
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: kMainColor,

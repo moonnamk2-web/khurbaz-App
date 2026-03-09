@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:moona/models/product_model.dart';
 
 import '../../../../managers/server/cart/cart_api.dart';
+import '../../../../utils/network/network_routes.dart';
 import '../../../../utils/resources/app_colors.dart';
 import '../../../../utils/widgets/cach_network_image_widget.dart';
 
@@ -100,7 +101,9 @@ class ProductCartTileState extends State<ProductCartTile> {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(18),
-                child: CacheNetworkImageWidget(url: widget.product.image),
+                child: CacheNetworkImageWidget(
+                  url: productsImagePathUrl + widget.product.image,
+                ),
               ),
             ),
 

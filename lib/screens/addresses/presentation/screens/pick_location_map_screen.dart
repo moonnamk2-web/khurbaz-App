@@ -76,7 +76,8 @@ class _PickLocationMapScreenState extends State<PickLocationMapScreen> {
         title: Text(
           'select on map',
           textAlign: TextAlign.center,
-          style: GoogleFonts.cairo(
+          style: TextStyle(
+            fontFamily: 'DINNextLT',
             color: Colors.black,
             fontSize: 16,
             fontWeight: FontWeight.w500,
@@ -128,7 +129,7 @@ class _PickLocationMapScreenState extends State<PickLocationMapScreen> {
                             child: Center(
                               child: Text(
                                 'select',
-                                style: GoogleFonts.cairo(
+                                style: GoogleFonts.marhey(
                                   fontSize: 14,
                                   color: Colors.white,
                                   fontWeight: FontWeight.w700,

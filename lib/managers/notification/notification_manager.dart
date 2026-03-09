@@ -18,81 +18,6 @@ class NotificationManager {
       FlutterLocalNotificationsPlugin();
   static NotificationDetails notificationDetails = const NotificationDetails();
 
-  static Future<String> getFireMessagingAccessToken() async {
-    print('==================getFireMessagingAccessToken');
-    final url = Uri.parse('getFireMessagingAccessTokenApi');
-    final headers = {'Content-Type': 'application/json'};
-    final response = await http.post(url, headers: headers);
-    if (response.statusCode == 200) {
-      // print('==================response.body ${response.body}');
-      dynamic map = json.decoder.convert(response.body);
-
-      return map['access_token'];
-    } else {
-      // print('حدث خطأ: ${response.body}');
-      throw (Exception());
-    }
-  }
-
-  static Future<void> sendNotification({
-    required String topic,
-    required String title,
-    required String bodyNot,
-    String? imageUrl,
-  }) async {
-    print('==================sendNotification');
-    String token = await getFireMessagingAccessToken();
-
-    final headers = {
-      'Authorization': 'Bearer ${token.trim()}',
-      'Content-Type': 'application/json',
-    };
-    final url = Uri.parse(
-      "https://fcm.googleapis.com/v1/projects/esnad-345d8/messages:send",
-    );
-
-    final body = jsonEncode({
-      "message": {
-        "topic": topic,
-        "data": {"title": title, "body": bodyNot, 'image_url': imageUrl},
-      },
-    });
-    final response = await http.post(url, headers: headers, body: body);
-
-    if (response.statusCode == 200) {
-      // print(response.body);
-      print('تم إرسال الإشعار بنجاح');
-    } else {
-      print('حدث خطأ: ${response.body}');
-    }
-  }
-
-  static Future<void> store({required NotificationModel notification}) async {
-    for (String topic in notification.target) {
-      sendNotification(
-        topic: topic,
-        title: notification.title,
-        bodyNot: notification.body,
-      );
-      final url = Uri.parse('notificationApi');
-      final body = jsonEncode(notification.toJson(topic));
-
-      final headers = {
-        //  'Authorization': 'Bearer ${token.trim()}',
-        'Content-Type': 'application/json',
-      };
-
-      final response = await http.post(url, headers: headers, body: body);
-
-      if (response.statusCode == 200) {
-        // print(response.body);
-        print('تم store_products الإشعار بنجاح');
-      } else {
-        print('حدث خطأ: ${response.body}');
-      }
-    }
-  }
-
   static Future<List<NotificationModel>> get({required int page}) async {
     final url = Uri.parse("'notificationApi'/get");
     final body = jsonEncode({"page": page, "user_id": ' AuthCubit.user!.id'});
@@ -174,7 +99,7 @@ class NotificationManager {
     }
     AndroidNotificationChannel channel = const AndroidNotificationChannel(
       '2', // id
-      'Esnad-Background', // title
+      'khurbaz-Background', // title
       importance: Importance.max,
       playSound: true,
     );
@@ -257,7 +182,7 @@ class NotificationManager {
 
     AndroidNotificationChannel channel = const AndroidNotificationChannel(
       '1', // id
-      'Esnad', // title
+      'khurbaz', // title
       importance: Importance.max,
       playSound: true,
     );

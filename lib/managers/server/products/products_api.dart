@@ -46,4 +46,40 @@ class ProductsApi {
     final json = jsonDecode(res.body);
     return ProductModel.fromJson(json['data']);
   }
+
+  Future<List<ProductModel>> searchProducts({
+    required String query,
+    required int sortIndex,
+    required bool availableOnly,
+    required bool discountOnly,
+  }) async {
+    String sort;
+
+    switch (sortIndex) {
+      case 1:
+        sort = "cheap";
+        break;
+      case 2:
+        sort = "expensive";
+        break;
+      default:
+        sort = "nearest";
+    }
+
+    final uri = Uri.parse("$baseUrl/products/search").replace(
+      queryParameters: {
+        "q": query,
+        "sort": sort,
+        "available": availableOnly ? "1" : "0",
+        "discount": discountOnly ? "1" : "0",
+      },
+    );
+
+    final response = await http.get(uri, headers: headersWithToken);
+
+    print('=========searchProducts ${response.body}');
+    final data = jsonDecode(response.body);
+
+    return (data['data'] as List).map((e) => ProductModel.fromJson(e)).toList();
+  }
 }

@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'app_colors.dart';
 
@@ -15,19 +14,20 @@ class AppThemes {
 
   static ThemeMode themeMode = ThemeMode.light;
   static ThemeData light = ThemeData(
-
-
-    // material 3
+    fontFamily: 'DINNextLT',
     useMaterial3: true,
     datePickerTheme: DatePickerThemeData(
       headerBackgroundColor: kPrimaryWhiteColor,
       rangePickerBackgroundColor: kPrimaryWhiteColor,
       surfaceTintColor: kPrimaryWhiteColor,
       backgroundColor: kPrimaryWhiteColor,
-      dayStyle: GoogleFonts.cairo(color: kMainColor),
-      headerHeadlineStyle: GoogleFonts.cairo(color: Colors.black),
-      headerHelpStyle: GoogleFonts.cairo(color: Colors.black),
-      weekdayStyle: GoogleFonts.cairo(color: Colors.black),
+      dayStyle: TextStyle(fontFamily: 'DINNextLT', color: kMainColor),
+      headerHeadlineStyle: TextStyle(
+        fontFamily: 'DINNextLT',
+        color: Colors.black,
+      ),
+      headerHelpStyle: TextStyle(fontFamily: 'DINNextLT', color: Colors.black),
+      weekdayStyle: TextStyle(fontFamily: 'DINNextLT', color: Colors.black),
       // dayBackgroundColor: WidgetStateProperty.all(kMainColor),
       // da: WidgetStateProperty.all(kMainColor.withOpacity(0.2)),
       yearForegroundColor: WidgetStateProperty.all(kMainColor.withOpacity(0.7)),
@@ -71,13 +71,15 @@ class AppThemes {
       showSelectedLabels: true,
       showUnselectedLabels: true,
       backgroundColor: kPrimaryWhiteColor,
-      selectedLabelStyle: GoogleFonts.cairo(
+      selectedLabelStyle: TextStyle(
+        fontFamily: 'DINNextLT',
         color: kMainColor,
         fontSize: 12,
         fontWeight: FontWeight.w700,
         height: 1.50,
       ),
-      unselectedLabelStyle: GoogleFonts.cairo(
+      unselectedLabelStyle: TextStyle(
+        fontFamily: 'DINNextLT',
         color: Colors.black,
         fontSize: 12,
         fontWeight: FontWeight.w600,
@@ -87,7 +89,7 @@ class AppThemes {
 
     /// appBar theme
     appBarTheme: AppBarTheme(
-      titleTextStyle: GoogleFonts.cairo(color: Colors.black),
+      titleTextStyle: TextStyle(fontFamily: 'DINNextLT', color: Colors.black),
       iconTheme: const IconThemeData(color: Colors.black),
     ),
 
@@ -103,28 +105,28 @@ class AppThemes {
         iconColor: WidgetStateProperty.all(Colors.black),
         foregroundColor: WidgetStateProperty.all(Colors.black),
         textStyle: WidgetStateProperty.all(
-          GoogleFonts.cairo(color: Colors.black),
+          TextStyle(fontFamily: 'DINNextLT', color: Colors.black),
         ),
       ),
     ),
 
     /// Text Style
     textTheme: TextTheme(
-      headlineLarge: GoogleFonts.cairo(color: Colors.black,),
-      headlineMedium: GoogleFonts.cairo(color: Colors.black,),
-      headlineSmall: GoogleFonts.cairo(color: Colors.black,),
-      displayLarge: GoogleFonts.cairo(color: Colors.black,),
-      displayMedium: GoogleFonts.cairo(color: Colors.black,),
-      displaySmall: GoogleFonts.cairo(color: Colors.black,),
-      titleLarge: GoogleFonts.cairo(color: Colors.black,),
-      titleMedium: GoogleFonts.cairo(color: Colors.black,),
-      titleSmall: GoogleFonts.cairo(color: Colors.black,),
-      bodyLarge: GoogleFonts.cairo(color: Colors.black,),
-      bodyMedium: GoogleFonts.cairo(color: Colors.black,),
-      bodySmall: GoogleFonts.cairo(color: Colors.black,),
-      labelLarge: GoogleFonts.cairo(color: Colors.black,),
-      labelMedium: GoogleFonts.cairo(color: Colors.black,),
-      labelSmall: GoogleFonts.cairo(color: Colors.black,),
+      headlineLarge: TextStyle(fontFamily: 'DINNextLT', color: Colors.black),
+      headlineMedium: TextStyle(fontFamily: 'DINNextLT', color: Colors.black),
+      headlineSmall: TextStyle(fontFamily: 'DINNextLT', color: Colors.black),
+      displayLarge: TextStyle(fontFamily: 'DINNextLT', color: Colors.black),
+      displayMedium: TextStyle(fontFamily: 'DINNextLT', color: Colors.black),
+      displaySmall: TextStyle(fontFamily: 'DINNextLT', color: Colors.black),
+      titleLarge: TextStyle(fontFamily: 'DINNextLT', color: Colors.black),
+      titleMedium: TextStyle(fontFamily: 'DINNextLT', color: Colors.black),
+      titleSmall: TextStyle(fontFamily: 'DINNextLT', color: Colors.black),
+      bodyLarge: TextStyle(fontFamily: 'DINNextLT', color: Colors.black),
+      bodyMedium: TextStyle(fontFamily: 'DINNextLT', color: Colors.black),
+      bodySmall: TextStyle(fontFamily: 'DINNextLT', color: Colors.black),
+      labelLarge: TextStyle(fontFamily: 'DINNextLT', color: Colors.black),
+      labelMedium: TextStyle(fontFamily: 'DINNextLT', color: Colors.black),
+      labelSmall: TextStyle(fontFamily: 'DINNextLT', color: Colors.black),
     ),
 
     inputDecorationTheme: InputDecorationTheme(
@@ -148,7 +150,8 @@ class AppThemes {
       ),
       prefixIconColor: CupertinoColors.black,
       suffixIconColor: CupertinoColors.black,
-      labelStyle: GoogleFonts.cairo(
+      labelStyle: TextStyle(
+        fontFamily: 'DINNextLT',
         color: const Color(0xFF8E8E8E),
         fontSize: 12,
         fontWeight: FontWeight.w400,
@@ -156,7 +159,7 @@ class AppThemes {
     ),
   );
   static ThemeData dark = ThemeData(
-    // material 3
+    fontFamily: 'DINNextLT',
     useMaterial3: true,
 
     /// main colors
@@ -190,9 +193,12 @@ class AppThemes {
     bottomSheetTheme: const BottomSheetThemeData(
       backgroundColor: kDarkBottomSheetBackground,
     ),
-    listTileTheme:  ListTileThemeData(
+    listTileTheme: ListTileThemeData(
       textColor: kPrimaryWhiteColor,
-      titleTextStyle: GoogleFonts.cairo(color: kPrimaryWhiteColor),
+      titleTextStyle: TextStyle(
+        fontFamily: 'DINNextLT',
+        color: kPrimaryWhiteColor,
+      ),
     ),
 
     textButtonTheme: TextButtonThemeData(
@@ -200,7 +206,7 @@ class AppThemes {
         iconColor: WidgetStateProperty.all(kPrimaryWhiteColor),
         foregroundColor: WidgetStateProperty.all(kPrimaryWhiteColor),
         textStyle: WidgetStateProperty.all(
-          GoogleFonts.cairo(color: kPrimaryWhiteColor),
+          TextStyle(fontFamily: 'DINNextLT', color: kPrimaryWhiteColor),
         ),
       ),
     ),
@@ -224,8 +230,14 @@ class AppThemes {
 
     /// appBar theme
     appBarTheme: AppBarTheme(
-      titleTextStyle: GoogleFonts.cairo(color: kPrimaryWhiteColor),
-      toolbarTextStyle: GoogleFonts.cairo(color: kPrimaryWhiteColor),
+      titleTextStyle: TextStyle(
+        fontFamily: 'DINNextLT',
+        color: kPrimaryWhiteColor,
+      ),
+      toolbarTextStyle: TextStyle(
+        fontFamily: 'DINNextLT',
+        color: kPrimaryWhiteColor,
+      ),
       iconTheme: const IconThemeData(color: kPrimaryWhiteColor),
     ),
 
@@ -239,21 +251,45 @@ class AppThemes {
 
     /// Text Style
     textTheme: TextTheme(
-      headlineLarge: GoogleFonts.cairo(color: kPrimaryWhiteColor),
-      headlineMedium: GoogleFonts.cairo(color: kPrimaryWhiteColor),
-      headlineSmall: GoogleFonts.cairo(color: kPrimaryWhiteColor),
-      displayLarge: GoogleFonts.cairo(color: kPrimaryWhiteColor),
-      displayMedium: GoogleFonts.cairo(color: kPrimaryWhiteColor),
-      displaySmall: GoogleFonts.cairo(color: kPrimaryWhiteColor),
-      titleLarge: GoogleFonts.cairo(color: kPrimaryWhiteColor),
-      titleMedium: GoogleFonts.cairo(color: kPrimaryWhiteColor),
-      titleSmall: GoogleFonts.cairo(color: kPrimaryWhiteColor),
-      bodyLarge: GoogleFonts.cairo(color: kPrimaryWhiteColor),
-      bodyMedium: GoogleFonts.cairo(color: kPrimaryWhiteColor),
-      bodySmall: GoogleFonts.cairo(color: kPrimaryWhiteColor),
-      labelLarge: GoogleFonts.cairo(color: kPrimaryWhiteColor),
-      labelMedium: GoogleFonts.cairo(color: kPrimaryWhiteColor),
-      labelSmall: GoogleFonts.cairo(color: kPrimaryWhiteColor),
+      headlineLarge: TextStyle(
+        fontFamily: 'DINNextLT',
+        color: kPrimaryWhiteColor,
+      ),
+      headlineMedium: TextStyle(
+        fontFamily: 'DINNextLT',
+        color: kPrimaryWhiteColor,
+      ),
+      headlineSmall: TextStyle(
+        fontFamily: 'DINNextLT',
+        color: kPrimaryWhiteColor,
+      ),
+      displayLarge: TextStyle(
+        fontFamily: 'DINNextLT',
+        color: kPrimaryWhiteColor,
+      ),
+      displayMedium: TextStyle(
+        fontFamily: 'DINNextLT',
+        color: kPrimaryWhiteColor,
+      ),
+      displaySmall: TextStyle(
+        fontFamily: 'DINNextLT',
+        color: kPrimaryWhiteColor,
+      ),
+      titleLarge: TextStyle(fontFamily: 'DINNextLT', color: kPrimaryWhiteColor),
+      titleMedium: TextStyle(
+        fontFamily: 'DINNextLT',
+        color: kPrimaryWhiteColor,
+      ),
+      titleSmall: TextStyle(fontFamily: 'DINNextLT', color: kPrimaryWhiteColor),
+      bodyLarge: TextStyle(fontFamily: 'DINNextLT', color: kPrimaryWhiteColor),
+      bodyMedium: TextStyle(fontFamily: 'DINNextLT', color: kPrimaryWhiteColor),
+      bodySmall: TextStyle(fontFamily: 'DINNextLT', color: kPrimaryWhiteColor),
+      labelLarge: TextStyle(fontFamily: 'DINNextLT', color: kPrimaryWhiteColor),
+      labelMedium: TextStyle(
+        fontFamily: 'DINNextLT',
+        color: kPrimaryWhiteColor,
+      ),
+      labelSmall: TextStyle(fontFamily: 'DINNextLT', color: kPrimaryWhiteColor),
     ),
 
     // pageTransitionsTheme: const PageTransitionsTheme(
@@ -284,8 +320,16 @@ class AppThemes {
       ),
       prefixIconColor: kPrimaryWhiteColor,
       suffixIconColor: kPrimaryWhiteColor,
-      hintStyle: GoogleFonts.cairo(fontSize: 16, color: kPrimaryWhiteColor),
-      labelStyle: GoogleFonts.cairo(fontSize: 16, color: kPrimaryWhiteColor),
+      hintStyle: TextStyle(
+        fontFamily: 'DINNextLT',
+        fontSize: 16,
+        color: kPrimaryWhiteColor,
+      ),
+      labelStyle: TextStyle(
+        fontFamily: 'DINNextLT',
+        fontSize: 16,
+        color: kPrimaryWhiteColor,
+      ),
     ),
   );
 }

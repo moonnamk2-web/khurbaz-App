@@ -3,6 +3,7 @@ import 'package:moona/models/category_model.dart';
 
 import '../../../../managers/server/categories/categories_api.dart';
 import '../../../../utils/helper/navigation/push_to.dart';
+import '../../../../utils/network/network_routes.dart';
 import '../../../../utils/resources/app_colors.dart';
 import '../../../../utils/widgets/cach_network_image_widget.dart';
 import '../../../products/ui/products_screen.dart';
@@ -26,57 +27,54 @@ class _CategoriesHorizontalGridState extends State<CategoriesHorizontalGrid> {
 
   @override
   Widget build(BuildContext context) {
-    return ColoredBox(
-      color: Colors.white,
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: FutureBuilder<List<CategoryModel>>(
-          future: future,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: FutureBuilder<List<CategoryModel>>(
+        future: future,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-            if (snapshot.hasError) {
-              return const Center(child: Text('فشل تحميل التصنيفات'));
-            }
+          if (snapshot.hasError) {
+            return const Center(child: Text('فشل تحميل التصنيفات'));
+          }
 
-            final categories = snapshot.data!;
-            if (categories.isEmpty) {
-              return const Center(child: Text('لا يوجد تصنيفات'));
-            }
+          final categories = snapshot.data!;
+          if (categories.isEmpty) {
+            return const Center(child: Text('لا يوجد تصنيفات'));
+          }
 
-            return GridView.builder(
-              shrinkWrap: true,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                mainAxisSpacing: 12,
-                crossAxisSpacing: 12,
-                childAspectRatio: 0.8,
-              ),
-              itemCount: categories.length,
-              itemBuilder: (context, index) {
-                final item = categories[index];
-                return GestureDetector(
-                  onTap: () {
-                    pushTo(
-                      context,
-                      ProductsScreen(
-                        categoryId: item.id,
-                        title: item.arName,
-                        daily: false,
-                        hasDiscount: false,
-                      ),
-                    );
-                  },
-                  child: CategoryTile(title: item.arName, img: item.imageUrl),
-                );
-              },
-            );
-          },
-        ),
+          return GridView.builder(
+            shrinkWrap: true,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              mainAxisSpacing: 12,
+              crossAxisSpacing: 12,
+              childAspectRatio: 0.8,
+            ),
+            itemCount: categories.length,
+            itemBuilder: (context, index) {
+              final item = categories[index];
+              return GestureDetector(
+                onTap: () {
+                  pushTo(
+                    context,
+                    ProductsScreen(
+                      categoryId: item.id,
+                      title: item.arName,
+                      daily: false,
+                      hasDiscount: false,
+                    ),
+                  );
+                },
+                child: CategoryTile(title: item.arName, img: item.imageUrl),
+              );
+            },
+          );
+        },
       ),
     );
   }
@@ -120,7 +118,10 @@ class CategoryTile extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Expanded(
-              child: CacheNetworkImageWidget(url: img, width: double.infinity),
+              child: CacheNetworkImageWidget(
+                url: categoriesImagePathUrl + img,
+                width: double.infinity,
+              ),
             ),
           ],
         ),

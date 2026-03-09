@@ -5,6 +5,7 @@ import 'package:moona/models/product_model.dart';
 
 import '../../../../managers/server/cart/cart_api.dart';
 import '../../../../utils/helper/navigation/push_to.dart';
+import '../../../../utils/network/network_routes.dart';
 import '../../../../utils/resources/app_colors.dart';
 import '../../../../utils/widgets/cach_network_image_widget.dart';
 import '../../../product_details/product_details_screen.dart';
@@ -149,7 +150,7 @@ class _ProductCardState extends State<ProductCard> {
           children: [
             // IMAGE
             Container(
-              height: 130,
+              height: 115,
               margin: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: kPrimaryWhiteColor,
@@ -157,31 +158,31 @@ class _ProductCardState extends State<ProductCard> {
                 border: Border.all(color: kBorderOverlayColor),
               ),
               child: CacheNetworkImageWidget(
-                url: widget.product.image,
+                url: productsImagePathUrl + widget.product.image,
                 width: double.infinity,
               ),
             ),
 
             // NAME
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Text(
-                widget.product.name,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: kTitleBodyColor,
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: Text(
+                  widget.product.name,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: kTitleBodyColor,
+                  ),
                 ),
               ),
             ),
 
-            const SizedBox(height: 6),
-
             // PRICE
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               child: widget.product.hasDiscount
                   ? Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -218,8 +219,6 @@ class _ProductCardState extends State<ProductCard> {
                       ),
                     ),
             ),
-
-            const Spacer(),
 
             // ADD / COUNTER
             AnimatedSwitcher(

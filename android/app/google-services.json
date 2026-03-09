@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "829709491865",
+    "project_id": "khurbaz-a2436",
+    "storage_bucket": "khurbaz-a2436.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:829709491865:android:cc0297e315d270ada66208",
+        "android_client_info": {
+          "package_name": "com.app.khurbaz"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjybWK7N2Ftlj6bYO86zfVt-w3pRBpju4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

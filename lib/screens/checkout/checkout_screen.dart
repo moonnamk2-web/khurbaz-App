@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:moona/screens/checkout/success_dialog.dart';
+import 'package:moona/screens/checkout/widget/payment_moyaser_web.dart';
 import 'package:moona/utils/resources/app_colors.dart';
 
 import '../../managers/server/cart/cart_api.dart';
-import '../../managers/server/checkout_api.dart';
+import '../../managers/server/payment_service.dart';
+import '../../utils/helper/navigation/push_to.dart';
 import '../addresses/data/entities/address_entity.dart';
 import '../addresses/presentation/cubit/addresses_cubit.dart';
 import '../addresses/presentation/cubit/addresses_state.dart';
+import '../addresses/presentation/screens/add_address_screen.dart';
 import '../addresses/presentation/screens/dialog/addresses_dialog.dart';
 import '../addresses/presentation/screens/widgets/address_card_shimmer.dart';
 
@@ -21,7 +22,6 @@ class CheckoutScreen extends StatefulWidget {
 }
 
 class _CheckoutScreenState extends State<CheckoutScreen> {
-  int selectedPayment = 0;
   bool checkoutLoading = false;
 
   @override
@@ -51,10 +51,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 child: ListView(
                   padding: const EdgeInsets.all(16),
                   children: [
+                    /// ================= ORDER SUMMARY =================
                     const _SectionTitle(
                       title: 'ملخص الطلب',
                       icon: Icons.receipt_long,
                     ),
+
                     FutureBuilder<CartSummury>(
                       future: CartApi.summary(),
                       builder: (context, snapshot) {
@@ -76,6 +78,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
                     const SizedBox(height: 20),
 
+                    /// ================= ADDRESS =================
                     const _SectionTitle(
                       title: 'عنوان التوصيل',
                       icon: Icons.location_on_outlined,
@@ -84,9 +87,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     BlocBuilder<AddressesCubit, AddressesState>(
                       builder: (context, state) {
                         switch (state.status) {
-                          case AddressesStatus.initial:
-                            return const SizedBox();
-
                           case AddressesStatus.loading:
                             return const AddressCardShimmer();
 
@@ -105,7 +105,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                               );
                             }
 
-                            /// ✅ نختار الافتراضي
                             final AddressEntity selectedAddress = state
                                 .addresses
                                 .firstWhere(
@@ -118,28 +117,63 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                               onChange: () {
                                 showModalBottomSheet(
                                   context: context,
-                                  builder: (BuildContext context) {
-                                    return AddressesDialog();
-                                  },
+                                  builder: (_) => AddressesDialog(),
                                 );
                               },
                             );
+
+                          default:
+                            return const SizedBox();
                         }
                       },
                     ),
 
                     const SizedBox(height: 20),
 
+                    /// ================= PAYMENT METHOD =================
                     const _SectionTitle(
                       title: 'طريقة الدفع',
                       icon: Icons.credit_card,
                     ),
 
-                    const PaymentMethods(),
+                    const SizedBox(height: 10),
+
+                    _Card(
+                      child: Row(
+                        children: [
+                          const Icon(Icons.credit_card, color: kMainColor),
+                          const SizedBox(width: 12),
+                          const Expanded(
+                            child: Text(
+                              "الدفع الإلكتروني",
+                              style: TextStyle(fontWeight: FontWeight.w600),
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              color: kMainColor.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: const Text(
+                              "آمن",
+                              style: TextStyle(
+                                color: kMainColor,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
 
+              /// ================= CONFIRM BUTTON =================
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -178,27 +212,45 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
                             setState(() => checkoutLoading = true);
 
-                            try {
-                              final orderId = await CheckoutApi.checkout(
-                                addressId: selectedAddress.id,
-                                paymentMethod: 'moyaser',
-                              );
+                            final paymentService = PaymentService();
 
+                            final result = await paymentService.startCheckout(
+                              addressId: selectedAddress.id,
+                            );
+
+                            setState(() => checkoutLoading = false);
+
+                            if (!result['success']) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(result['message'])),
+                              );
+                              return;
+                            }
+
+                            final verifyResult = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => PaymentWebViewScreen(
+                                  checkoutUrl: result['checkout_url'],
+                                  paymentId: result['payment_id'],
+                                ),
+                              ),
+                            );
+
+                            if (verifyResult != null &&
+                                verifyResult['success'] == true) {
                               Navigator.pushNamedAndRemoveUntil(
                                 context,
                                 "main",
                                 (route) => false,
                               );
+
                               showDialog(
                                 context: context,
-                                builder: (_) => SuccessDialog(orderId: orderId),
+                                builder: (_) => SuccessDialog(
+                                  orderId: verifyResult['order_id'],
+                                ),
                               );
-                            } catch (e) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(e.toString())),
-                              );
-                            } finally {
-                              setState(() => checkoutLoading = false);
                             }
                           },
                     style: ElevatedButton.styleFrom(
@@ -359,162 +411,6 @@ class DeliveryLocationCard extends StatelessWidget {
   }
 }
 
-/// ===================== PAYMENT METHODS =====================
-class PaymentMethods extends StatefulWidget {
-  const PaymentMethods({super.key});
-
-  @override
-  State<PaymentMethods> createState() => _PaymentMethodsState();
-}
-
-class _PaymentMethodsState extends State<PaymentMethods> {
-  int selected = 0;
-
-  @override
-  Widget build(BuildContext context) {
-    return _Card(
-      child: Column(
-        children: [
-          _PaymentGatewayTile(
-            title: 'بطاقة ائتمان / خصم',
-            subtitle: 'Visa • MasterCard',
-            logos: const [
-              _PaymentLogo(
-                'https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png',
-              ),
-              _PaymentLogo(
-                'https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg',
-                isSvg: true,
-              ),
-            ],
-            selected: selected == 0,
-            onTap: () => setState(() => selected = 0),
-          ),
-
-          const SizedBox(height: 14),
-
-          _PaymentGatewayTile(
-            title: 'Apple Pay / Google Pay',
-            subtitle: 'دفع سريع وآمن',
-            logos: const [
-              _PaymentLogo(
-                'https://upload.wikimedia.org/wikipedia/commons/b/b0/Apple_Pay_logo.svg',
-                isSvg: true,
-              ),
-              _PaymentLogo(
-                'https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg',
-                isSvg: true,
-              ),
-            ],
-            selected: selected == 1,
-            onTap: () => setState(() => selected = 1),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _PaymentGatewayTile extends StatelessWidget {
-  final String title;
-  final String subtitle;
-  final List<_PaymentLogo> logos;
-  final bool selected;
-  final VoidCallback onTap;
-
-  const _PaymentGatewayTile({
-    required this.title,
-    required this.subtitle,
-    required this.logos,
-    required this.selected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(14),
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: selected ? kMainColor : kBorderNeutralColor,
-            width: selected ? 1.6 : 1,
-          ),
-          color: selected ? kMainColor.withOpacity(0.04) : Colors.transparent,
-        ),
-        child: Row(
-          children: [
-            // LOGOS
-            Row(
-              children: logos
-                  .map(
-                    (logo) => Padding(
-                      padding: const EdgeInsets.only(left: 8),
-                      child: logo,
-                    ),
-                  )
-                  .toList(),
-            ),
-
-            const SizedBox(width: 12),
-
-            // TEXT
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(fontWeight: FontWeight.w600),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: const TextStyle(fontSize: 12, color: kSubtitleColor),
-                  ),
-                ],
-              ),
-            ),
-
-            // RADIO
-            Icon(
-              selected ? Icons.radio_button_checked : Icons.radio_button_off,
-              color: selected ? kMainColor : kTitleGreyColor,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _PaymentLogo extends StatelessWidget {
-  final String url;
-  final bool isSvg;
-
-  const _PaymentLogo(this.url, {this.isSvg = false});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 28,
-      width: 44,
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: kBorderOverlayColor),
-      ),
-      child: isSvg
-          ? SvgPicture.network(url)
-          : Image.network(url, fit: BoxFit.contain),
-    );
-  }
-}
-
 /// ===================== SHARED UI =====================
 
 class _SectionTitle extends StatelessWidget {
@@ -619,7 +515,8 @@ class _ErrorBox extends StatelessWidget {
           Expanded(
             child: Text(
               message,
-              style: GoogleFonts.cairo(
+              style: TextStyle(
+                fontFamily: 'DINNextLT',
                 fontSize: 14,
                 color: Colors.red.shade700,
                 fontWeight: FontWeight.w700,
@@ -672,7 +569,8 @@ class _InfoBox extends StatelessWidget {
             Expanded(
               child: Text(
                 text,
-                style: GoogleFonts.cairo(
+                style: TextStyle(
+                  fontFamily: 'DINNextLT',
                   fontSize: 13,
                   color: Colors.black54,
                   fontWeight: FontWeight.w700,
@@ -680,18 +578,25 @@ class _InfoBox extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 10),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-              decoration: BoxDecoration(
-                color: kMainColor.withOpacity(0.10),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Text(
-                actionText,
-                style: GoogleFonts.cairo(
-                  fontSize: 12,
-                  color: kMainColor,
-                  fontWeight: FontWeight.w900,
+            GestureDetector(
+              onTap: () => pushTo(context, AddAddressScreen(add: true)),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: kMainColor.withOpacity(0.10),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  actionText,
+                  style: TextStyle(
+                    fontFamily: 'DINNextLT',
+                    fontSize: 12,
+                    color: kMainColor,
+                    fontWeight: FontWeight.w900,
+                  ),
                 ),
               ),
             ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:moona/utils/helper/navigation/push_to.dart';
+import 'package:moona/utils/network/network_routes.dart';
 
 import '../../../managers/server/categories/categories_api.dart';
 import '../../../models/category_model.dart';
@@ -106,7 +107,7 @@ class _CategoryCardState extends State<_CategoryCard> {
               child: Row(
                 children: [
                   CacheNetworkImageWidget(
-                    url: widget.category.imageUrl,
+                    url: categoriesImagePathUrl + widget.category.imageUrl,
                     width: 48,
                     height: 48,
                   ),
@@ -160,7 +161,7 @@ class _CategoryCardState extends State<_CategoryCard> {
                     child: Column(
                       children: [
                         CacheNetworkImageWidget(
-                          url: sub.imageUrl,
+                          url: categoriesImagePathUrl + sub.imageUrl,
                           width: 60,
                           height: 60,
                         ),

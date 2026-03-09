@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:moona/screens/auth/uis/screens/login_screen.dart';
-import 'package:moona/screens/auth/uis/screens/signup_screen.dart';
+import 'package:moona/screens/about_us_screen.dart';
+import 'package:moona/screens/contact_us_screen.dart';
+import 'package:moona/screens/main/singup_section.dart';
 import 'package:moona/screens/main/ui/main_screen.dart';
 import 'package:moona/state-managment/bloc/auth/auth_cubit.dart';
 import 'package:moona/utils/helper/navigation/push_to.dart';
@@ -10,6 +10,7 @@ import 'package:moona/utils/helper/navigation/push_to.dart';
 import '../../managers/cash_manager.dart';
 import '../../utils/helper/navigation/push_replacement.dart';
 import '../../utils/resources/app_colors.dart';
+import '../privacy_policy_screen.dart';
 
 class MoreScreen extends StatelessWidget {
   const MoreScreen({super.key});
@@ -19,6 +20,77 @@ class MoreScreen extends StatelessWidget {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
+        appBar: (AuthCubit.user?.phoneNumber != null)
+            ? AppBar(
+                leading: SizedBox(),
+                actions: [
+                  SizedBox(width: 8),
+
+                  Text(
+                    'أهلاً',
+                    style: TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.black,
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      AuthCubit.user?.fullName,
+                      maxLines: 1,
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w800,
+                        color: kMainColor,
+                      ),
+                    ),
+                  ),
+
+                  /// LOGOUT
+                  Padding(
+                    padding: const EdgeInsets.symmetric(),
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        CacheManager.getInstance()!.logout();
+                        AuthCubit.user = null;
+                        pushReplacement(context, const MainScreen());
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: kMainColor.withOpacity(0.2),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: SvgPicture.asset(
+                        'assets/images/sign-out-alt.svg',
+                        width: 18,
+                        color: kMainColor,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 8),
+
+                  /// DELETE ACCOUNT
+                  Padding(
+                    padding: const EdgeInsets.symmetric(),
+                    child: ElevatedButton(
+                      onPressed: () async {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red.withOpacity(0.2),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: Icon(Icons.delete_outline, color: Colors.red),
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                ],
+              )
+            : null,
         backgroundColor: kScaffoldBackground,
         body: SafeArea(
           child: SingleChildScrollView(
@@ -26,105 +98,19 @@ class MoreScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 children: [
-                  const SizedBox(height: 24),
-
-                  if (AuthCubit.user != null)
+                  if (AuthCubit.user?.phoneNumber != null)
                     /// HEADER
                     Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Row(
-                          spacing: 8,
-                          children: [
-                            Text(
-                              'أهلاً',
-                              style: TextStyle(
-                                fontSize: 26,
-                                fontWeight: FontWeight.w800,
-                                color: Colors.black,
-                              ),
-                            ),
-                            Text(
-                              AuthCubit.user!.fullName,
-                              style: TextStyle(
-                                fontSize: 26,
-                                fontWeight: FontWeight.w800,
-                                color: kMainColor,
-                              ),
-                            ),
-                          ],
-                        ),
                         const SizedBox(height: 8),
-                        Image.asset('assets/images/logo.png', height: 300),
-                      ],
-                    ),
-                  if (AuthCubit.user == null)
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        /// HEADER
-                        Text(
-                          'أهلاً!',
-                          style: TextStyle(
-                            fontSize: 26,
-                            fontWeight: FontWeight.w800,
-                            color: kMainColor,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Image.asset('assets/images/register.jpeg', height: 300),
-                        const SizedBox(height: 8),
-
-                        const Text(
-                          'مستخدم جديد؟ قم بإنشاء حساب جديد.',
-                          style: TextStyle(fontSize: 14, color: Colors.black54),
-                        ),
-
-                        const SizedBox(height: 24),
-
-                        /// CREATE ACCOUNT BUTTON
-                        SizedBox(
-                          width: double.infinity,
-                          height: 54,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              pushTo(context, RegisterScreen());
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: kMainColor,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              elevation: 0,
-                            ),
-                            child: const Text(
-                              'إنشاء حساب',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(height: 16),
-
-                        /// LOGIN
-                        GestureDetector(
-                          onTap: () {
-                            pushTo(context, LoginScreen());
-                          },
-                          child: const Text(
-                            'هل لديك حساب؟ تسجيل الدخول',
-                            style: TextStyle(
-                              color: kMainColor,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Image.asset('assets/images/logo.png'),
                         ),
                       ],
                     ),
+                  if (AuthCubit.user?.phoneNumber == null) SignupSection(),
 
                   const SizedBox(height: 24),
 
@@ -132,92 +118,19 @@ class MoreScreen extends StatelessWidget {
                   _MoreItem(
                     icon: Icons.phone_outlined,
                     title: 'تواصل معنا',
-                    onTap: () {},
+                    onTap: () => pushTo(context, ContactUsScreen()),
                   ),
                   _MoreItem(
                     icon: Icons.info_outline,
-                    title: 'عن Moona',
-                    onTap: () {},
+                    title: 'عن خربز',
+                    onTap: () => pushTo(context, AboutKhurbazScreen()),
                   ),
                   _MoreItem(
                     icon: Icons.privacy_tip_outlined,
                     title: 'سياسة الخصوصية',
-                    onTap: () {},
+                    onTap: () => pushTo(context, PrivacyPolicyScreen()),
                   ),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      /// LOGOUT
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            CacheManager.getInstance()!.logout();
-                            AuthCubit.user = null;
-                            pushReplacement(context, const MainScreen());
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: kMainColor,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            elevation: 0,
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Row(
-                              spacing: 8,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                SvgPicture.asset(
-                                  'assets/images/sign-out-alt.svg',
-                                  width: 18,
-                                  color: Colors.white,
-                                ),
-                                Text(
-                                  'تسجيل خروج',
-                                  style: GoogleFonts.cairo(
-                                    fontSize: 16,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
 
-                      /// DELETE ACCOUNT
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 4.0,
-                          vertical: 8,
-                        ),
-                        child: ElevatedButton(
-                          onPressed: () async {},
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            elevation: 0,
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Text(
-                              'حذف الحساب',
-                              style: GoogleFonts.cairo(
-                                fontSize: 16,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
                   const SizedBox(height: 100),
                 ],
               ),

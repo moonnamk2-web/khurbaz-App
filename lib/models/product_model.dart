@@ -1,7 +1,7 @@
 class ProductModel {
   int id;
   int subCategoryId;
-  int brandId;
+  int? brandId;
   int inCartQuantity;
   int? cartItemId;
 

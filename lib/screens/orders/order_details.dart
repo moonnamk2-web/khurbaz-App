@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:moona/utils/network/network_routes.dart';
 import 'package:moona/utils/widgets/cach_network_image_widget.dart';
 
 import '../../managers/server/order/order_api.dart';
@@ -60,7 +61,7 @@ class OrderDetailsScreen extends StatelessWidget {
                     child: Row(
                       children: [
                         CacheNetworkImageWidget(
-                          url: item.image,
+                          url: productsImagePathUrl + item.image,
                           width: 60,
                           height: 60,
                         ),
@@ -75,7 +76,7 @@ class OrderDetailsScreen extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          '${item.price * item.quantity} جنيه',
+                          '${item.price * item.quantity} ﷼',
                           style: const TextStyle(fontWeight: FontWeight.w700),
                         ),
                       ],
@@ -88,7 +89,7 @@ class OrderDetailsScreen extends StatelessWidget {
                 const SizedBox(height: 8),
 
                 Text(
-                  'الإجمالي: ${order.grandTotal} جنيه',
+                  'الإجمالي: ${order.grandTotal} ﷼',
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,

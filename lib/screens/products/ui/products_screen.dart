@@ -5,6 +5,7 @@ import '../../../managers/server/categories/categories_api.dart';
 import '../../../managers/server/products/products_api.dart';
 import '../../../models/product_model.dart';
 import '../../../models/sub_category_model.dart';
+import '../../../utils/network/network_routes.dart';
 import '../../../utils/resources/app_colors.dart';
 import '../../../utils/widgets/shimmers/products_grid_shimmer.dart';
 import '../../../utils/widgets/shimmers/sub_categories_shimmer.dart';
@@ -136,6 +137,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
@@ -188,7 +190,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                                       child: CircleAvatar(
                                         radius: 28,
                                         backgroundImage: NetworkImage(
-                                          sub.imageUrl,
+                                          categoriesImagePathUrl + sub.imageUrl,
                                         ),
                                       ),
                                     ),
@@ -224,31 +226,40 @@ class _ProductsScreenState extends State<ProductsScreen> {
                           style: TextStyle(fontWeight: FontWeight.w600),
                         ),
                       )
-                    : GridView.builder(
+                    : SingleChildScrollView(
                         controller: _scrollController,
                         padding: const EdgeInsets.all(12),
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              mainAxisSpacing: 12,
-                              crossAxisSpacing: 12,
-                              childAspectRatio: 0.78,
-                            ),
-                        itemCount: products.length + (loadingMore ? 1 : 0),
-                        itemBuilder: (_, i) {
-                          if (i == products.length) {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          }
+                        child: Wrap(
+                          spacing: 0,
+                          runSpacing: 12,
+                          children: [
+                            ...products.map((product) {
+                              return SizedBox(
+                                width:
+                                    (MediaQuery.of(context).size.width - 36) /
+                                    2,
+                                height: 240,
+                                child: ProductCard(
+                                  product: product,
+                                  onPop: () {
+                                    _loadProducts(subs[selectedSubIndex].id);
+                                  },
+                                ),
+                              );
+                            }),
 
-                          return ProductCard(
-                            product: products[i],
-                            onPop: () {
-                              _loadProducts(subs[selectedSubIndex].id);
-                            },
-                          );
-                        },
+                            if (loadingMore)
+                              const SizedBox(
+                                width: double.infinity,
+                                child: Center(
+                                  child: Padding(
+                                    padding: EdgeInsets.all(20),
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
                       ),
               ),
             ],

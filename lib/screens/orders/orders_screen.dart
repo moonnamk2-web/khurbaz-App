@@ -4,6 +4,8 @@ import 'package:moona/utils/helper/navigation/push_to.dart';
 
 import '../../managers/server/order/order_api.dart';
 import '../../models/order/order.dart';
+import '../../state-managment/bloc/auth/auth_cubit.dart';
+import '../main/singup_section.dart';
 import 'order_details.dart';
 
 class OrdersScreen extends StatefulWidget {
@@ -25,16 +27,20 @@ class _OrdersScreenState extends State<OrdersScreen> {
   @override
   void initState() {
     super.initState();
-    _loadOrders();
+    if (AuthCubit.user?.phoneNumber != null) {
+      _loadOrders();
 
-    _controller.addListener(() {
-      if (_controller.position.pixels >=
-              _controller.position.maxScrollExtent - 200 &&
-          !loadingMore &&
-          hasMore) {
-        _loadMore();
-      }
-    });
+      _controller.addListener(() {
+        if (_controller.position.pixels >=
+                _controller.position.maxScrollExtent - 200 &&
+            !loadingMore &&
+            hasMore) {
+          _loadMore();
+        }
+      });
+    } else {
+      loading = false;
+    }
   }
 
   Future<void> _loadOrders() async {
@@ -80,7 +86,12 @@ class _OrdersScreenState extends State<OrdersScreen> {
           ),
           centerTitle: true,
         ),
-        body: loading
+        body: (AuthCubit.user?.phoneNumber == null)
+            ? Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: SignupSection(),
+              )
+            : loading
             ? const Center(child: CircularProgressIndicator())
             : ListView.separated(
                 controller: _controller,

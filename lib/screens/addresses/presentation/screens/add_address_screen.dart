@@ -102,6 +102,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
             child: Text(
               "إضافة عنوان",
               style: const TextStyle(
+                fontFamily: 'DINNextLT',
                 color: Colors.black,
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -187,7 +188,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                                 children: [
                                   Expanded(
                                     child: Field(
-                                      text: 'اسم البناء (اختياري)',
+                                      text: 'اسم البناء',
                                       validateText: 'اسم البناء',
                                       readOnly: false,
                                       obscureText: false,
@@ -200,7 +201,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                                   ),
                                   Expanded(
                                     child: Field(
-                                      text: 'الطابق (اختياري)',
+                                      text: 'الطابق',
                                       validateText: 'الطابق',
                                       readOnly: false,
                                       obscureText: false,
@@ -237,6 +238,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                                       'عنواني الإفتراضي',
                                       textAlign: TextAlign.center,
                                       style: const TextStyle(
+                                        fontFamily: 'DINNextLT',
                                         fontSize: 18,
                                         color: Colors.black,
                                       ),
@@ -296,6 +298,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                                 'حفظ',
                                 textAlign: TextAlign.center,
                                 style: const TextStyle(
+                                  fontFamily: 'DINNextLT',
                                   fontSize: 18,
                                   color: Colors.white,
                                 ),

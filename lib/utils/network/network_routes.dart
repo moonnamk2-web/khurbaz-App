@@ -13,13 +13,11 @@ dynamic headersWithToken = {
 };
 const baseUrl = 'http://72.62.237.230/api';
 const userAuthBaseUrl = '$baseUrl/auth';
-// const storeBaseUrl = '$baseUrl/store';
-//
-// const imagePathUrl = "https://syrainshaheen.com/images/";
-// const imageProductPathUrl = "https://syrainshaheen.com/images/products/";
-// const videoPathUrl = "https://syrainshaheen.com/videos/";
-// const voicePathUrl = "https://syrainshaheen.com/voices/";
-//
+const imagePathUrl = "http://72.62.237.230/images/";
+const categoriesImagePathUrl = "http://72.62.237.230/images/categories/";
+const productsImagePathUrl = "http://72.62.237.230/images/products/";
+const bannersImagePathUrl = "http://72.62.237.230/images/banners/";
+
 const logoutApi = '$userAuthBaseUrl/logout?';
 const loginApi = '$userAuthBaseUrl/login?';
 const registerApi = '$userAuthBaseUrl/register?';

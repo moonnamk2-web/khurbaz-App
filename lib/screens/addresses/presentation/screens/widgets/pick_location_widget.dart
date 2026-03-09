@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../../../utils/helper/navigation/push_to.dart';
@@ -31,7 +30,8 @@ class _PickLocationWidgetState extends State<PickLocationWidget> {
             SvgPicture.asset('assets/icons/location.svg'),
             Text(
               'الموقع على الخريطة',
-              style: GoogleFonts.cairo(
+              style: TextStyle(
+                fontFamily: 'DINNextLT',
                 color: const Color(0xFF1C1C1C),
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
@@ -77,7 +77,8 @@ class _PickLocationWidgetState extends State<PickLocationWidget> {
                 Text(
                   widget.location == null ? 'تحديد الموقع' : "تم تحديد الموقع",
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.cairo(
+                  style: TextStyle(
+                    fontFamily: 'DINNextLT',
                     color: Colors.black,
                     fontSize: 16,
                     fontWeight: FontWeight.w500,

@@ -1,10 +1,10 @@
 import 'dart:convert';
 
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../../managers/cash_manager.dart';
 import '../../../models/user/user_model.dart';
@@ -38,16 +38,34 @@ class AuthCubit extends Cubit<AuthStates> {
     emit(OTPSent(phoneNumber: phoneNumber));
   }
 
-  Future<dynamic> register({
-    String? phoneNumber,
-    String? fullName,
-    required bool isGust,
-  }) async {
+  static Future<String> getDeviceId() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    String? savedId = prefs.getString('device_id');
+
+    if (savedId != null) {
+      return savedId;
+    }
+
+    final newId = const Uuid().v4();
+    await prefs.setString('device_id', newId);
+
+    return newId;
+  }
+
+  Future<dynamic> register({String? phoneNumber, String? fullName}) async {
+    String? deviceId;
+    deviceId = await getDeviceId();
+
     final url = Uri.parse(registerApi);
     final response = await http.post(
       url,
       headers: headers,
-      body: jsonEncode({'phone_number': phoneNumber, 'full_name': fullName}),
+      body: jsonEncode({
+        'device_id': deviceId,
+        'phone_number': phoneNumber,
+        'full_name': fullName,
+      }),
     );
 
     final map = json.decode(response.body);
@@ -57,7 +75,6 @@ class AuthCubit extends Cubit<AuthStates> {
 
       if (map['status'] == "success") {
         user = UserModel.fromJson(map['user']);
-
         user!.token = map['access_token'];
         updateToken(map['access_token']);
         await CacheManager.getInstance()!.storeUserModelData(user!);
@@ -79,13 +96,16 @@ class AuthCubit extends Cubit<AuthStates> {
     }
   }
 
-  static Future<dynamic> login({required String phoneNumber}) async {
+  static Future<dynamic> login({String? phoneNumber}) async {
+    String? deviceId;
+    deviceId = await getDeviceId();
+
     final url = Uri.parse(loginApi);
 
     final response = await http.post(
       url,
       headers: headers,
-      body: jsonEncode({'phone_number': phoneNumber}),
+      body: jsonEncode({'phone_number': phoneNumber, 'device_id': deviceId}),
     );
 
     final map = json.decode(response.body);

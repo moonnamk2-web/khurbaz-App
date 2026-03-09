@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../../utils/resources/app_colors.dart';
 import '../../../data/entities/address_entity.dart';
@@ -76,7 +75,8 @@ class AddressCard extends StatelessWidget {
                       Expanded(
                         child: Text(
                           address.addressName,
-                          style: GoogleFonts.cairo(
+                          style: TextStyle(
+                            fontFamily: 'DINNextLT',
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
                           ),
@@ -99,7 +99,8 @@ class AddressCard extends StatelessWidget {
                       Expanded(
                         child: Text(
                           address.locationName,
-                          style: GoogleFonts.cairo(
+                          style: TextStyle(
+                            fontFamily: 'DINNextLT',
                             fontSize: 14,
                             color: kTitleBodyLightColor,
                           ),
@@ -121,7 +122,8 @@ class AddressCard extends StatelessWidget {
                       const SizedBox(width: 4),
                       Text(
                         address.receiverName,
-                        style: GoogleFonts.cairo(
+                        style: TextStyle(
+                          fontFamily: 'DINNextLT',
                           fontSize: 13,
                           color: kTitleGreyColor,
                         ),
@@ -129,7 +131,8 @@ class AddressCard extends StatelessWidget {
                       const SizedBox(width: 6),
                       Text(
                         '• ${address.phoneNumber}',
-                        style: GoogleFonts.cairo(
+                        style: TextStyle(
+                          fontFamily: 'DINNextLT',
                           fontSize: 13,
                           color: kTitleGreyColor,
                         ),

@@ -12,6 +12,7 @@ class OrdersApi {
       Uri.parse('$baseUrl/orders?page=$page'),
       headers: headersWithToken,
     );
+    print('===============getOrders ${res.body}');
 
     if (res.statusCode != 200) {
       throw Exception('Failed to load orders');

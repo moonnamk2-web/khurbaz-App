@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:moona/screens/home/ui/widgets/app_bar_widget.dart';
 import 'package:moona/screens/home/ui/widgets/categories_widget.dart';
 import 'package:moona/screens/home/ui/widgets/home_top_widget.dart';
 import 'package:moona/screens/home/ui/widgets/location_row.dart';
@@ -64,6 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
         SliverToBoxAdapter(
           child: SectionHeader(
+            showViewMore: true,
             title: 'احتياجاتك اليومية',
             onTap: () {
               pushTo(
@@ -82,12 +84,23 @@ class _HomeScreenState extends State<HomeScreen> {
 
         SliverToBoxAdapter(child: SizedBox(height: 12)),
         SliverToBoxAdapter(
-          child: ColoredBox(
-            color: Colors.white,
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: AlignmentGeometry.topCenter,
+                end: AlignmentGeometry.bottomCenter,
+                colors: [light2Green, Colors.white, Colors.white],
+              ),
+            ),
             child: Column(
               children: [
-                SectionHeader(title: 'تسوق أكثر', onTap: () {}),
-                PromoCards(),
+                SectionHeader(
+                  showViewMore: false,
+
+                  title: 'تسوق أكثر',
+                  onTap: () {},
+                ),
+                SubCategoriesBanners(),
               ],
             ),
           ),
@@ -97,7 +110,12 @@ class _HomeScreenState extends State<HomeScreen> {
             color: Colors.white,
             child: Column(
               children: [
-                SectionHeader(title: 'الفئات', onTap: () {}),
+                SectionHeader(
+                  showViewMore: false,
+
+                  title: 'الفئات',
+                  onTap: () {},
+                ),
                 CategoriesHorizontalGrid(),
               ],
             ),
@@ -105,19 +123,30 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
 
         SliverToBoxAdapter(
-          child: SectionHeader(
-            title: 'عروض البقالة',
-            onTap: () {
-              pushTo(
-                context,
-                ProductsScreen(
-                  categoryId: 1,
-                  title: 'عروض البقالة',
-                  daily: false,
-                  hasDiscount: true,
-                ),
-              );
-            },
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: AlignmentGeometry.topCenter,
+                end: AlignmentGeometry.bottomCenter,
+                colors: [Colors.white, light2Green],
+              ),
+            ),
+            child: SectionHeader(
+              showViewMore: true,
+
+              title: 'عروض البقالة',
+              onTap: () {
+                pushTo(
+                  context,
+                  ProductsScreen(
+                    categoryId: 1,
+                    title: 'عروض البقالة',
+                    daily: false,
+                    hasDiscount: true,
+                  ),
+                );
+              },
+            ),
           ),
         ),
         ProductHorizontalList(daily: false, hasDiscount: true),
