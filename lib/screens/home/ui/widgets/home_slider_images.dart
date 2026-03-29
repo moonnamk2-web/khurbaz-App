@@ -91,15 +91,19 @@ class _HomeSliderImagesState extends State<HomeSliderImages> {
 
           return Center(
             child: GestureDetector(
-              onTap: () => pushTo(
-                context,
-                ProductsScreen(
-                  categoryId: banner.categoryId ?? 1,
-                  daily: false,
-                  hasDiscount: false,
-                  title: '',
-                ),
-              ),
+              onTap: () {
+                if (banner.categoryId != null) {
+                  pushTo(
+                    context,
+                    ProductsScreen(
+                      categoryId: banner.categoryId!,
+                      daily: false,
+                      hasDiscount: false,
+                      title: '',
+                    ),
+                  );
+                }
+              },
               child: CacheNetworkImageWidget(
                 url: bannersImagePathUrl + banner.url,
                 width: double.infinity,

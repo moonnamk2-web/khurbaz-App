@@ -96,7 +96,6 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 SectionHeader(
                   showViewMore: false,
-
                   title: 'تسوق أكثر',
                   onTap: () {},
                 ),

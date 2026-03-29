@@ -42,9 +42,10 @@ class PaymentService {
   Future<Map<String, dynamic>> verifyPayment({
     required int paymentLocalId,
     required String paymentMoyasarId,
+    required DateTime? executionTime,
   }) async {
     final url = Uri.parse(
-      '$baseUrl/payment/verify/$paymentLocalId?id=$paymentMoyasarId',
+      '$baseUrl/payment/verify/$paymentLocalId?id=$paymentMoyasarId&&${executionTime != null ? 'execution_time=${executionTime!.toIso8601String()}' : ""}',
     );
 
     final response = await http.get(url, headers: headersWithToken);

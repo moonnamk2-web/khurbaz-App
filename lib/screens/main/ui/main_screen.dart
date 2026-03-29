@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:moona/utils/helper/navigation/push_to.dart';
+import 'package:moona/screens/main/widgets/floating_action_button.dart';
 
+import '../../../managers/network_manager.dart';
 import '../../../utils/resources/app_colors.dart';
-import '../../cart/ui/cart_screen.dart';
 import '../../categories/ui/categories_screen.dart';
 import '../../home/ui/home_screen.dart';
 import '../../home/ui/widgets/app_bar_widget.dart';
@@ -32,41 +32,41 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: ColoredBox(
-        color: Colors.white,
-        child: SafeArea(
-          child: Scaffold(
-            backgroundColor: light2Green,
-            floatingActionButtonLocation:
-                FloatingActionButtonLocation.centerFloat,
-            floatingActionButton: Padding(
-              padding: const EdgeInsets.only(bottom: 20.0),
-              child: FloatingActionButton(
-                onPressed: () {
-                  pushTo(context, CartScreen());
-                },
-                backgroundColor: kMainColor,
-                child: SvgPicture.asset(
-                  'assets/images/cart.svg',
-                  color: Colors.white,
-                ),
-              ),
-            ),
-            body: Stack(
-              children: [
-                _screens[_currentIndex],
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      NetworkService().start(context);
+    });
+    // TODO: implement initState
+    super.initState();
+  }
 
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: _FloatingNavBar(
-                    currentIndex: _currentIndex,
-                    onTap: _onTap,
+  @override
+  Widget build(BuildContext context) {
+    return PopScope(
+      canPop: false,
+      child: Directionality(
+        textDirection: TextDirection.rtl,
+        child: ColoredBox(
+          color: Colors.white,
+          child: SafeArea(
+            child: Scaffold(
+              backgroundColor: light2Green,
+              floatingActionButtonLocation:
+                  FloatingActionButtonLocation.centerFloat,
+              floatingActionButton: FloatingActionButtonWidget(),
+              body: Stack(
+                children: [
+                  _screens[_currentIndex],
+
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: _FloatingNavBar(
+                      currentIndex: _currentIndex,
+                      onTap: _onTap,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

@@ -98,6 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               readOnly: false,
                               obscureText: false,
                               prefixIcon: CountryCodePicker(
+                                showCountryOnly: true,
                                 initialSelection: 'SA',
                                 favorite: const ['+966', 'SA'],
                                 padding: EdgeInsets.zero,

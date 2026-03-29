@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
@@ -71,7 +73,7 @@ class AuthCubit extends Cubit<AuthStates> {
     final map = json.decode(response.body);
 
     if (response.statusCode == 200) {
-      print('==========login: $map');
+      print('==========register: $map');
 
       if (map['status'] == "success") {
         user = UserModel.fromJson(map['user']);
@@ -79,11 +81,11 @@ class AuthCubit extends Cubit<AuthStates> {
         updateToken(map['access_token']);
         await CacheManager.getInstance()!.storeUserModelData(user!);
 
-        // if (!kIsWeb) {
-        //   FirebaseMessaging.instance.subscribeToTopic(
-        //     'Customer-${AuthCubit.user!.id.toString()}',
-        //   );
-        // }
+        if (!kIsWeb) {
+          FirebaseMessaging.instance.subscribeToTopic(
+            'User-${AuthCubit.user!.id.toString()}',
+          );
+        }
         return null;
       } else {
         print('==========login Failed: $map');
@@ -101,6 +103,7 @@ class AuthCubit extends Cubit<AuthStates> {
     deviceId = await getDeviceId();
 
     final url = Uri.parse(loginApi);
+    print('==========login: $deviceId');
 
     final response = await http.post(
       url,
@@ -120,11 +123,11 @@ class AuthCubit extends Cubit<AuthStates> {
         updateToken(map['access_token']);
         await CacheManager.getInstance()!.storeUserModelData(user!);
 
-        // if (!kIsWeb) {
-        //   FirebaseMessaging.instance.subscribeToTopic(
-        //     'Customer-${AuthCubit.user!.id.toString()}',
-        //   );
-        // }
+        if (!kIsWeb) {
+          FirebaseMessaging.instance.subscribeToTopic(
+            'User-${AuthCubit.user!.id.toString()}',
+          );
+        }
         return null;
       } else {
         print('==========login Failed: $map');
@@ -165,6 +168,29 @@ class AuthCubit extends Cubit<AuthStates> {
     } else {
       print('==========refreshToken Failed: ${response.body}');
       await CacheManager.getInstance()!.logout();
+
+      return false;
+    }
+  }
+
+  Future<bool> deleteAccount() async {
+    final url = Uri.parse(userAuthBaseUrl);
+
+    final response = await http.delete(url, headers: headersWithToken);
+
+    final map = json.decode(response.body);
+
+    if (response.statusCode == 200) {
+      print('==========deleteAccount: $map');
+
+      if (map['status'] == "success") {
+        return true;
+      } else {
+        print('==========deleteAccount Failed: $map');
+        return false;
+      }
+    } else {
+      print('==========deleteAccount Failed: $map');
 
       return false;
     }

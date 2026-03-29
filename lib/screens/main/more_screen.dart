@@ -1,3 +1,5 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:moona/screens/about_us_screen.dart';
@@ -10,10 +12,31 @@ import 'package:moona/utils/helper/navigation/push_to.dart';
 import '../../managers/cash_manager.dart';
 import '../../utils/helper/navigation/push_replacement.dart';
 import '../../utils/resources/app_colors.dart';
+import '../../utils/widgets/check_dialog.dart';
 import '../privacy_policy_screen.dart';
 
-class MoreScreen extends StatelessWidget {
+class MoreScreen extends StatefulWidget {
   const MoreScreen({super.key});
+
+  @override
+  State<MoreScreen> createState() => _MoreScreenState();
+}
+
+class _MoreScreenState extends State<MoreScreen> {
+  Future<bool> onCheck() async {
+    await AuthCubit.instance(context).deleteAccount();
+    if (!kIsWeb) {
+      FirebaseMessaging.instance.unsubscribeFromTopic(
+        'User-${AuthCubit.user!.id}',
+      );
+    }
+    CacheManager.getInstance()!.logout();
+    AuthCubit.user = null;
+    pushReplacement(context, const MainScreen());
+
+    pushReplacement(context, const MainScreen());
+    return true;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,6 +75,11 @@ class MoreScreen extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(),
                     child: ElevatedButton(
                       onPressed: () async {
+                        if (!kIsWeb) {
+                          FirebaseMessaging.instance.unsubscribeFromTopic(
+                            'User-${AuthCubit.user!.id}',
+                          );
+                        }
                         CacheManager.getInstance()!.logout();
                         AuthCubit.user = null;
                         pushReplacement(context, const MainScreen());
@@ -76,7 +104,16 @@ class MoreScreen extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(),
                     child: ElevatedButton(
-                      onPressed: () async {},
+                      onPressed: () async {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) => CheckDialog(
+                            textButton: 'حذف',
+                            text: 'هل انت متأكد انك تريد حذف الحساب ؟',
+                            onCheck: () async => await onCheck(),
+                          ),
+                        );
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red.withOpacity(0.2),
                         shape: RoundedRectangleBorder(

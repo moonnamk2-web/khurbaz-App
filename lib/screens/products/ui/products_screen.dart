@@ -3,6 +3,7 @@ import 'package:moona/screens/products/ui/widgets/product_card.dart';
 
 import '../../../managers/server/categories/categories_api.dart';
 import '../../../managers/server/products/products_api.dart';
+import '../../../models/category_model.dart';
 import '../../../models/product_model.dart';
 import '../../../models/sub_category_model.dart';
 import '../../../utils/network/network_routes.dart';
@@ -31,6 +32,7 @@ class ProductsScreen extends StatefulWidget {
 class _ProductsScreenState extends State<ProductsScreen> {
   int selectedSubIndex = 0;
 
+  List<CategoryModel> categories = [];
   List<SubCategoryModel> subs = [];
   List<ProductModel> products = [];
   bool loadingProducts = true;
@@ -47,6 +49,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
   void initState() {
     super.initState();
     _loadSubCategories();
+    // if(widget.hasDiscount||widget.daily){
+    //   _loadCategories();
+    // }
 
     _scrollController.addListener(() {
       if (_scrollController.position.pixels >=
@@ -66,6 +71,22 @@ class _ProductsScreenState extends State<ProductsScreen> {
   }
 
   /// ================= SUB CATEGORIES =================
+
+  Future<void> _loadCategories() async {
+    loadingSubs = true;
+    setState(() {});
+
+    categories = await CategoriesApi.getCategories();
+
+    loadingSubs = false;
+
+    if (subs.isNotEmpty) {
+      selectedSubIndex = 0;
+      await _loadProducts(subs.first.id);
+    }
+
+    setState(() {});
+  }
 
   Future<void> _loadSubCategories() async {
     loadingSubs = true;
@@ -95,7 +116,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
     setState(() {});
 
     final res = await ProductsApi.getProducts(
-      subCategoryId: subCategoryId,
+      subCategoryId: widget.hasDiscount || widget.daily ? null : subCategoryId,
       page: currentPage,
       daily: widget.daily,
       hasDiscount: widget.hasDiscount,
@@ -236,9 +257,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
                             ...products.map((product) {
                               return SizedBox(
                                 width:
-                                    (MediaQuery.of(context).size.width - 36) /
+                                    (MediaQuery.of(context).size.width - 24) /
                                     2,
-                                height: 240,
+                                height: 250,
                                 child: ProductCard(
                                   product: product,
                                   onPop: () {

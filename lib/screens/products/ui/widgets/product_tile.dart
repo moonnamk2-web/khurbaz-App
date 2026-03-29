@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:moona/models/product_model.dart';
 
+import '../../../../features/cart_summury/presentation/cubit/cart_summary_cubit.dart';
 import '../../../../managers/server/cart/cart_api.dart';
 import '../../../../utils/network/network_routes.dart';
 import '../../../../utils/resources/app_colors.dart';
 import '../../../../utils/widgets/cach_network_image_widget.dart';
+import '../../../../utils/widgets/check_dialog.dart';
 
 class ProductCartTile extends StatefulWidget {
   const ProductCartTile(this.product, {super.key});
@@ -25,21 +28,48 @@ class ProductCartTileState extends State<ProductCartTile> {
     count = widget.product.inCartQuantity;
   }
 
-  Future<void> _add() async {
+  Future<void> increment() async {
     if (loading) return;
-
     setState(() {
       loading = true;
       count++;
     });
-
+    int? availableQuantity;
     try {
-      await CartApi.update(
-        cartItemId: widget.product.cartItemId!,
-        quantity: count,
-      );
+      if (widget.product.cartItemId == null) {
+        widget.product.cartItemId = await CartApi.add(
+          productId: widget.product.id,
+          quantity: 1,
+        );
+      } else {
+        availableQuantity = await CartApi.update(
+          cartItemId: widget.product.cartItemId!,
+          quantity: count,
+        );
+      }
+      if (availableQuantity != null) {
+        setState(() {
+          loading = true;
+          count--;
+        });
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return CheckDialog(
+              text: 'هذه الكمية غير متاحة من المنتج',
+              textButton: 'أكبر كمية متاحة',
+              onCheck: () async {
+                setState(() => count = availableQuantity!);
+                Navigator.pop(context);
+                return true;
+              },
+            );
+          },
+        );
+      }
+      context.read<CartSummaryCubit>().loadSummary();
     } catch (_) {
-      setState(() => count--); // rollback
+      setState(() => count--);
     } finally {
       setState(() => loading = false);
     }
@@ -62,6 +92,7 @@ class ProductCartTileState extends State<ProductCartTile> {
           quantity: count,
         );
       }
+      context.read<CartSummaryCubit>().loadSummary();
     } catch (_) {
       setState(() => count++); // rollback
     } finally {
@@ -184,7 +215,7 @@ class ProductCartTileState extends State<ProductCartTile> {
 
                   // ADD
                   GestureDetector(
-                    onTap: loading ? null : _add,
+                    onTap: loading ? null : increment,
                     child: Container(
                       height: 36,
                       padding: const EdgeInsets.symmetric(horizontal: 18),

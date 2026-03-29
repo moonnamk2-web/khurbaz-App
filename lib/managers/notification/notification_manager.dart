@@ -10,6 +10,7 @@ import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 
 import '../../models/notification.dart';
+import '../../utils/network/network_routes.dart';
 import '../../utils/resources/app_colors.dart';
 
 @pragma('vm:entry-point')
@@ -21,11 +22,6 @@ class NotificationManager {
   static Future<List<NotificationModel>> get({required int page}) async {
     final url = Uri.parse("'notificationApi'/get");
     final body = jsonEncode({"page": page, "user_id": ' AuthCubit.user!.id'});
-
-    final headers = {
-      //  'Authorization': 'Bearer ${token.trim()}',
-      'Content-Type': 'application/json',
-    };
 
     final response = await http.post(url, headers: headers, body: body);
     final data = json.decode(response.body);

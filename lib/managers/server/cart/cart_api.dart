@@ -89,7 +89,7 @@ class CartApi {
   }
 
   /// ADD (or increase)
-  static Future<void> add({
+  static Future<int> add({
     required int productId,
     required int quantity,
   }) async {
@@ -99,10 +99,13 @@ class CartApi {
       body: jsonEncode({'product_id': productId, 'quantity': quantity}),
     );
     print('==========add: ${res.body}');
+    final body = jsonDecode(res.body);
+    final data = body['data'];
+    return data['id'];
   }
 
   /// UPDATE quantity
-  static Future<void> update({
+  static Future<int?> update({
     required int cartItemId,
     required int quantity,
   }) async {
@@ -112,6 +115,8 @@ class CartApi {
       body: jsonEncode({'quantity': quantity}),
     );
     print('==========update: ${res.body}');
+    final body = jsonDecode(res.body);
+    return body['available_quantity'];
   }
 
   /// REMOVE

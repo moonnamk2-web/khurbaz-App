@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../utils/resources/app_colors.dart';
 
@@ -28,7 +27,7 @@ class ContactUsScreen extends StatelessWidget {
               _ContactCard(
                 icon: Icons.phone,
                 title: "رقم الهاتف",
-                value: "+966 5XXXXXXXX",
+                value: "966-567189796",
               ),
 
               const SizedBox(height: 16),
@@ -36,7 +35,7 @@ class ContactUsScreen extends StatelessWidget {
               _ContactCard(
                 icon: Icons.email_outlined,
                 title: "البريد الإلكتروني",
-                value: "support@khurbaz.com",
+                value: "khurbaz@outlook.sa",
               ),
 
               const SizedBox(height: 16),
@@ -44,7 +43,7 @@ class ContactUsScreen extends StatelessWidget {
               _ContactCard(
                 icon: Icons.access_time,
                 title: "ساعات العمل",
-                value: "يومياً من 9 صباحاً حتى 11 مساءً",
+                value: "يومياً من 9 صباحاً حتى 1 فجرا",
               ),
 
               const SizedBox(height: 30),

@@ -78,7 +78,9 @@ class _OrdersScreenState extends State<OrdersScreen> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        backgroundColor: const Color(0xFFF6F7F9),
+        backgroundColor: orders.isEmpty
+            ? Colors.white
+            : const Color(0xFFF6F7F9),
         appBar: AppBar(
           title: const Text(
             'طلباتي',
@@ -93,9 +95,16 @@ class _OrdersScreenState extends State<OrdersScreen> {
               )
             : loading
             ? const Center(child: CircularProgressIndicator())
+            : orders.isEmpty
+            ? NoOrders()
             : ListView.separated(
                 controller: _controller,
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.only(
+                  top: 16,
+                  bottom: 100,
+                  right: 16,
+                  left: 16,
+                ),
                 itemCount: orders.length + (loadingMore ? 1 : 0),
                 separatorBuilder: (_, __) => const SizedBox(height: 12),
                 itemBuilder: (context, index) {
@@ -221,19 +230,18 @@ class OrderCard extends StatelessWidget {
 }
 
 /// ================= STATUS CONFIG =================
-enum OrderStatus { pending, onTheWay, delivered, canceled }
+enum OrderStatus { pending, onTheWay, delivered, preparing, canceled }
 
 OrderStatus mapOrderStatus(String status) {
   switch (status.toLowerCase()) {
     case 'pending':
-    case 'preparing':
       return OrderStatus.pending;
+    case 'preparing':
+      return OrderStatus.preparing;
 
     case 'on_the_way':
-    case 'shipping':
       return OrderStatus.onTheWay;
 
-    case 'completed':
     case 'delivered':
       return OrderStatus.delivered;
 
@@ -249,14 +257,21 @@ _StatusUI _statusConfig(OrderStatus status) {
   switch (status) {
     case OrderStatus.pending:
       return _StatusUI(
-        text: 'قيد التحضير',
+        text: 'بانتظار الموافقة',
         icon: Icons.hourglass_bottom,
         color: Colors.orange,
         bg: Colors.orange.withOpacity(0.15),
       );
+    case OrderStatus.preparing:
+      return _StatusUI(
+        text: 'قيد التحضير',
+        icon: Icons.hourglass_bottom,
+        color: Colors.deepOrangeAccent,
+        bg: Colors.deepOrangeAccent.withOpacity(0.15),
+      );
     case OrderStatus.onTheWay:
       return _StatusUI(
-        text: 'في الطريق',
+        text: 'جاري التوصيل',
         icon: Icons.local_shipping_outlined,
         color: Colors.blue,
         bg: Colors.blue.withOpacity(0.15),
@@ -290,4 +305,34 @@ class _StatusUI {
     required this.color,
     required this.bg,
   });
+}
+
+class NoOrders extends StatelessWidget {
+  const NoOrders({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset('assets/images/no-orders.png'),
+          SizedBox(height: 16),
+          Text(
+            'لايوجد طلبات',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: Colors.grey,
+            ),
+          ),
+          SizedBox(height: 8),
+          // Text(
+          //   '',
+          //   style: TextStyle(color: Colors.grey),
+          // ),
+        ],
+      ),
+    );
+  }
 }

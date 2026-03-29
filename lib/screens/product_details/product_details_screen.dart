@@ -1,12 +1,18 @@
+import 'package:badges/badges.dart' as badges;
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:moona/utils/helper/navigation/push_to.dart';
 import 'package:moona/utils/resources/app_colors.dart';
 import 'package:moona/utils/widgets/cach_network_image_widget.dart';
 
+import '../../features/cart_summury/presentation/cubit/cart_summary_cubit.dart';
+import '../../features/cart_summury/presentation/cubit/cart_summary_state.dart';
 import '../../managers/server/cart/cart_api.dart';
 import '../../managers/server/products/products_api.dart';
 import '../../models/product_model.dart';
 import '../../utils/network/network_routes.dart';
+import '../../utils/widgets/check_dialog.dart';
 import '../cart/ui/cart_screen.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
@@ -52,15 +58,44 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     });
 
     try {
+      int? availableQuantity;
+
       if (product.cartItemId == null) {
-        await CartApi.add(productId: product.id, quantity: newQty);
+        product.cartItemId = await CartApi.add(
+          productId: product.id,
+          quantity: newQty,
+        );
 
         // re-fetch to get cart_item_id
         final refreshed = await ProductsApi.getProduct(product.id);
         product.cartItemId = refreshed.cartItemId;
       } else {
-        await CartApi.update(cartItemId: product.cartItemId!, quantity: newQty);
+        availableQuantity = await CartApi.update(
+          cartItemId: product.cartItemId!,
+          quantity: quantity,
+        );
       }
+      if (availableQuantity != null) {
+        setState(() {
+          loading = true;
+          quantity--;
+        });
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return CheckDialog(
+              text: 'هذه الكمية غير متاحة من المنتج',
+              textButton: 'أكبر كمية متاحة',
+              onCheck: () async {
+                setState(() => quantity = availableQuantity!);
+                Navigator.pop(context);
+                return true;
+              },
+            );
+          },
+        );
+      }
+      context.read<CartSummaryCubit>().loadSummary();
 
       product.inCartQuantity = newQty;
     } catch (_) {
@@ -89,6 +124,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         await CartApi.update(cartItemId: product.cartItemId!, quantity: newQty);
         product.inCartQuantity = newQty;
       }
+      context.read<CartSummaryCubit>().loadSummary();
     } catch (_) {
       quantity++; // rollback
     } finally {
@@ -205,10 +241,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                 icon: Icons.arrow_back,
                                 onTap: () => Navigator.pop(context),
                               ),
-                              _TopIcon(
-                                icon: Icons.shopping_cart_outlined,
-                                onTap: () => pushTo(context, CartScreen()),
-                              ),
                             ],
                           ),
                         ),
@@ -305,41 +337,66 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           const SizedBox(height: 12),
 
                           /// COUNTER (THE ONLY UPDATE SOURCE)
-                          Row(
-                            children: [
-                              _QtyButton(
-                                icon: Icons.add,
-                                onTap: loading ? null : () => _add(product),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 24,
-                                ),
-                                child: loading
-                                    ? const SizedBox(
-                                        height: 18,
-                                        width: 18,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          color: kMainColor,
-                                        ),
-                                      )
-                                    : Text(
-                                        '$quantity',
-                                        style: const TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w700,
+                          product.availableQuantity! <= 0
+                              ? Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Container(
+                                      padding: const EdgeInsets.all(4.0),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(12),
+                                        color: Colors.red.withOpacity(0.1),
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          'الكمية نفذت',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.red,
+                                            fontWeight: FontWeight.w600,
+                                          ),
                                         ),
                                       ),
-                              ),
-                              _QtyButton(
-                                icon: Icons.remove,
-                                onTap: loading || quantity == 0
-                                    ? null
-                                    : () => _remove(product),
-                              ),
-                            ],
-                          ),
+                                    ),
+                                  ),
+                                )
+                              : Row(
+                                  children: [
+                                    _QtyButton(
+                                      icon: Icons.add,
+                                      onTap: loading
+                                          ? null
+                                          : () => _add(product),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 24,
+                                      ),
+                                      child: loading
+                                          ? const SizedBox(
+                                              height: 18,
+                                              width: 18,
+                                              child: CircularProgressIndicator(
+                                                strokeWidth: 2,
+                                                color: kMainColor,
+                                              ),
+                                            )
+                                          : Text(
+                                              '$quantity',
+                                              style: const TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                            ),
+                                    ),
+                                    _QtyButton(
+                                      icon: Icons.remove,
+                                      onTap: loading || quantity == 0
+                                          ? null
+                                          : () => _remove(product),
+                                    ),
+                                  ],
+                                ),
                         ],
                       ),
                     ),
@@ -354,20 +411,61 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       child: ElevatedButton(
                         onPressed: quantity == 0
                             ? () => _add(product)
-                            : () => pushTo(context, CartScreen()),
+                            : () =>
+                                  pushTo(context, CartScreen(fromMain: false)),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: kMainColor,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
                           ),
                         ),
-                        child: Text(
-                          quantity == 0 ? 'أضف إلى السلة' : 'عرض السلة',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
-                          ),
+                        child: Row(
+                          spacing: 16,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            BlocBuilder<CartSummaryCubit, CartSummaryState>(
+                              builder: (_, state) {
+                                final int badgeCount =
+                                    state.summary?.totalItems ?? 0;
+
+                                return badges.Badge(
+                                  position: badges.BadgePosition.topStart(
+                                    top: 4,
+                                  ),
+                                  showBadge: badgeCount > 0,
+                                  badgeAnimation:
+                                      const badges.BadgeAnimation.scale(),
+                                  badgeStyle: badges.BadgeStyle(
+                                    badgeColor: Colors.red,
+                                    elevation: 0,
+                                    padding: const EdgeInsets.all(6),
+                                  ),
+                                  badgeContent: Text(
+                                    badgeCount.toString(),
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 10,
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: SvgPicture.asset(
+                                      'assets/images/cart.svg',
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                            Text(
+                              quantity == 0 ? 'أضف إلى السلة' : 'عرض السلة',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),

@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:intl/intl.dart' as intl;
 import 'package:moona/screens/checkout/success_dialog.dart';
 import 'package:moona/screens/checkout/widget/payment_moyaser_web.dart';
 import 'package:moona/utils/resources/app_colors.dart';
+import 'package:moona/utils/widgets/snackbar/failed_snackbar.dart';
 
 import '../../managers/server/cart/cart_api.dart';
 import '../../managers/server/payment_service.dart';
@@ -23,6 +27,10 @@ class CheckoutScreen extends StatefulWidget {
 
 class _CheckoutScreenState extends State<CheckoutScreen> {
   bool checkoutLoading = false;
+  String type = 'delivery';
+  String time = 'now';
+  String executionTimeTime = '';
+  DateTime? executionTime;
 
   @override
   void initState() {
@@ -76,6 +84,41 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       },
                     ),
 
+                    const SizedBox(height: 20),
+                    _Section(
+                      title: 'وقت التوصيل',
+                      titleStyle: TextStyle(
+                        fontSize: 18,
+                        color: Colors.black87,
+                        fontWeight: FontWeight.w800,
+                      ),
+                      child: _SegmentedRow(
+                        leftText: "توصيل مباشرة",
+                        rightText: executionTime != null
+                            ? executionTimeTime
+                            : "وقت لاحق",
+                        leftSelected: time == 'now',
+                        onLeft: () => setState(() => time = 'now'),
+                        onRight: () async {
+                          setState(() => time = 'later');
+                          DatePicker.showDateTimePicker(
+                            context,
+                            minTime: DateTime.now(),
+                            maxTime: DateTime.now().add(
+                              const Duration(days: 365),
+                            ),
+                            onConfirm: (date) {
+                              setState(() {
+                                executionTime = date;
+                                executionTimeTime = intl.DateFormat(
+                                  'yyyy-MM-dd / HH:mm',
+                                ).format(date);
+                              });
+                            },
+                          );
+                        },
+                      ),
+                    ),
                     const SizedBox(height: 20),
 
                     /// ================= ADDRESS =================
@@ -140,8 +183,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
                     _Card(
                       child: Row(
+                        spacing: 4,
                         children: [
-                          const Icon(Icons.credit_card, color: kMainColor),
+                          // const Icon(Icons.credit_card, color: kMainColor),
                           const SizedBox(width: 12),
                           const Expanded(
                             child: Text(
@@ -149,23 +193,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                               style: TextStyle(fontWeight: FontWeight.w600),
                             ),
                           ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 6,
-                            ),
-                            decoration: BoxDecoration(
-                              color: kMainColor.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: const Text(
-                              "آمن",
-                              style: TextStyle(
-                                color: kMainColor,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
+
+                          SvgPicture.asset('assets/images/visa.svg', width: 40),
+                          SvgPicture.asset(
+                            'assets/images/mastercard.svg',
+                            width: 40,
                           ),
+                          Image.asset('assets/images/apple-pay.png', width: 40),
                         ],
                       ),
                     ),
@@ -197,11 +231,20 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
                             if (state.status != AddressesStatus.loaded ||
                                 state.addresses.isEmpty) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('الرجاء اختيار عنوان'),
-                                ),
+                              showFailedTopSnackBar(
+                                context: context,
+                                title: 'الرجاء اختيار عنوان',
+                                content: '',
                               );
+                              return;
+                            }
+                            if (time != 'now' && executionTime == null) {
+                              showFailedTopSnackBar(
+                                context: context,
+                                title: 'الرجاء اختيار وقت التوصيل',
+                                content: '',
+                              );
+
                               return;
                             }
 
@@ -231,6 +274,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                               context,
                               MaterialPageRoute(
                                 builder: (_) => PaymentWebViewScreen(
+                                  executionTime: executionTime,
                                   checkoutUrl: result['checkout_url'],
                                   paymentId: result['payment_id'],
                                 ),
@@ -310,7 +354,7 @@ class OrderSummaryCard extends StatelessWidget {
           _SummaryRow(
             'رسوم التوصيل',
             summary.deliveryFee == 0
-                ? 'توصيل محاني'
+                ? 'توصيل مجاني'
                 : '${summary.deliveryFee} ﷼',
           ),
 
@@ -601,6 +645,124 @@ class _InfoBox extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _Section extends StatelessWidget {
+  const _Section({
+    required this.title,
+    required this.titleStyle,
+    required this.child,
+  });
+
+  final String title;
+  final TextStyle titleStyle;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          spacing: 4,
+          children: [
+            Icon(Icons.timer_sharp, color: kMainColor, size: 16),
+            Text(title, style: titleStyle),
+          ],
+        ),
+        const SizedBox(height: 10),
+        child,
+      ],
+    );
+  }
+}
+
+class _SegmentedRow extends StatelessWidget {
+  const _SegmentedRow({
+    required this.leftText,
+    required this.rightText,
+    required this.leftSelected,
+    required this.onLeft,
+    required this.onRight,
+  });
+
+  final String leftText;
+  final String rightText;
+  final bool leftSelected;
+  final VoidCallback onLeft;
+  final VoidCallback onRight;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(6),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: _SegBtn(
+              text: leftText,
+              selected: leftSelected,
+              onTap: onLeft,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: _SegBtn(
+              text: rightText,
+              selected: !leftSelected,
+              onTap: onRight,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SegBtn extends StatelessWidget {
+  const _SegBtn({
+    required this.text,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String text;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          color: selected ? kMainColor.withOpacity(0.12) : kScaffoldBackground,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: selected ? kMainColor.withOpacity(0.35) : Colors.transparent,
+          ),
+        ),
+        child: Center(
+          child: Text(
+            text,
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w800,
+              color: selected ? kMainColor : Colors.black54,
+            ),
+          ),
         ),
       ),
     );

@@ -13,12 +13,14 @@
         "cached_network_image",
         "carousel_slider",
         "change_app_package_name",
+        "connectivity_plus",
         "country_code_picker",
         "cupertino_icons",
         "firebase_core",
         "firebase_messaging",
         "flutter",
         "flutter_bloc",
+        "flutter_datetime_picker_plus",
         "flutter_inappwebview",
         "flutter_local_notifications",
         "flutter_native_splash",
@@ -62,6 +64,26 @@
         "stream_channel",
         "test_api",
         "vector_math"
+      ]
+    },
+    {
+      "name": "connectivity_plus",
+      "version": "6.1.5",
+      "dependencies": [
+        "collection",
+        "connectivity_plus_platform_interface",
+        "flutter",
+        "flutter_web_plugins",
+        "meta",
+        "nm",
+        "web"
+      ]
+    },
+    {
+      "name": "flutter_datetime_picker_plus",
+      "version": "2.2.0",
+      "dependencies": [
+        "flutter"
       ]
     },
     {
@@ -403,6 +425,34 @@
       ]
     },
     {
+      "name": "nm",
+      "version": "0.5.0",
+      "dependencies": [
+        "dbus"
+      ]
+    },
+    {
+      "name": "web",
+      "version": "1.1.1",
+      "dependencies": []
+    },
+    {
+      "name": "connectivity_plus_platform_interface",
+      "version": "2.0.1",
+      "dependencies": [
+        "flutter",
+        "meta",
+        "plugin_platform_interface"
+      ]
+    },
+    {
+      "name": "flutter_web_plugins",
+      "version": "0.0.0",
+      "dependencies": [
+        "flutter"
+      ]
+    },
+    {
       "name": "fixnum",
       "version": "1.1.1",
       "dependencies": []
@@ -478,11 +528,6 @@
         "flutter",
         "nested"
       ]
-    },
-    {
-      "name": "web",
-      "version": "1.1.1",
-      "dependencies": []
     },
     {
       "name": "http_parser",
@@ -853,13 +898,6 @@
       ]
     },
     {
-      "name": "flutter_web_plugins",
-      "version": "0.0.0",
-      "dependencies": [
-        "flutter"
-      ]
-    },
-    {
       "name": "args",
       "version": "2.7.0",
       "dependencies": []
@@ -943,10 +981,13 @@
       ]
     },
     {
-      "name": "typed_data",
-      "version": "1.4.0",
+      "name": "dbus",
+      "version": "0.7.11",
       "dependencies": [
-        "collection"
+        "args",
+        "ffi",
+        "meta",
+        "xml"
       ]
     },
     {
@@ -954,6 +995,13 @@
       "version": "2.1.8",
       "dependencies": [
         "meta"
+      ]
+    },
+    {
+      "name": "typed_data",
+      "version": "1.4.0",
+      "dependencies": [
+        "collection"
       ]
     },
     {
@@ -1029,16 +1077,6 @@
       "name": "ffi",
       "version": "2.1.5",
       "dependencies": []
-    },
-    {
-      "name": "dbus",
-      "version": "0.7.11",
-      "dependencies": [
-        "args",
-        "ffi",
-        "meta",
-        "xml"
-      ]
     },
     {
       "name": "package_info_plus",

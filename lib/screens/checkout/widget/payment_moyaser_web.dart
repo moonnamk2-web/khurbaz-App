@@ -7,9 +7,11 @@ import '../../../managers/server/payment_service.dart';
 class PaymentWebViewScreen extends StatefulWidget {
   final String checkoutUrl;
   final int paymentId;
+  final DateTime? executionTime;
 
   const PaymentWebViewScreen({
     super.key,
+    required this.executionTime,
     required this.checkoutUrl,
     required this.paymentId,
   });
@@ -51,6 +53,7 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
                   final paymentLocalId = widget.paymentId;
 
                   final result = await PaymentService().verifyPayment(
+                    executionTime: widget.executionTime,
                     paymentLocalId: paymentLocalId,
                     paymentMoyasarId: paymentMoyasarId!,
                   );

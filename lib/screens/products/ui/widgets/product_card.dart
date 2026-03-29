@@ -1,8 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:moona/models/product_model.dart';
+import 'package:moona/utils/widgets/check_dialog.dart';
 
+import '../../../../features/cart_summury/presentation/cubit/cart_summary_cubit.dart';
 import '../../../../managers/server/cart/cart_api.dart';
 import '../../../../utils/helper/navigation/push_to.dart';
 import '../../../../utils/network/network_routes.dart';
@@ -36,40 +39,73 @@ class _ProductCardState extends State<ProductCard> {
       loading = true;
       count++;
     });
-
+    int? availableQuantity;
     try {
       if (widget.product.cartItemId == null) {
-        await CartApi.add(productId: widget.product.id, quantity: 1);
+        widget.product.cartItemId = await CartApi.add(
+          productId: widget.product.id,
+          quantity: 1,
+        );
       } else {
-        await CartApi.update(
+        availableQuantity = await CartApi.update(
           cartItemId: widget.product.cartItemId!,
           quantity: count,
         );
       }
+      if (availableQuantity != null) {
+        setState(() {
+          loading = true;
+          count--;
+        });
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return CheckDialog(
+              text: 'هذه الكمية غير متاحة من المنتج',
+              textButton: 'أكبر كمية متاحة',
+              onCheck: () async {
+                setState(() => count = availableQuantity!);
+                Navigator.pop(context);
+                return true;
+              },
+            );
+          },
+        );
+      }
+      context.read<CartSummaryCubit>().loadSummary();
     } catch (_) {
-      setState(() => count--); // rollback
+      setState(() => count--);
     } finally {
       setState(() => loading = false);
     }
   }
 
   Future<void> decrement() async {
+    print('====decrement');
+
     if (loading || count == 0) return;
 
     setState(() {
       loading = true;
       count--;
     });
+    print('====count${count}');
 
     try {
       if (count == 0 && widget.product.cartItemId != null) {
+        print('====remove');
         await CartApi.remove(widget.product.cartItemId!);
+        widget.product.cartItemId = null;
+        count == 0;
       } else if (widget.product.cartItemId != null) {
+        print('====update $count');
+
         await CartApi.update(
           cartItemId: widget.product.cartItemId!,
           quantity: count,
         );
       }
+      context.read<CartSummaryCubit>().loadSummary();
     } catch (_) {
       setState(() => count++); // rollback
     } finally {
@@ -221,18 +257,43 @@ class _ProductCardState extends State<ProductCard> {
             ),
 
             // ADD / COUNTER
-            AnimatedSwitcher(
-              duration: const Duration(milliseconds: 280),
-              child: count == 0
-                  ? AddButton(key: const ValueKey('add'), onTap: increment)
-                  : CounterControls(
-                      key: const ValueKey('counter'),
-                      count: count,
-                      onAdd: increment,
-                      onRemove: decrement,
-                      onCountTap: _showQuantityDialog,
+            widget.product.availableQuantity! <= 0
+                ? Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        padding: const EdgeInsets.all(4.0),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          color: Colors.red.withOpacity(0.1),
+                        ),
+                        child: Center(
+                          child: Text(
+                            'الكمية نفذت',
+                            style: TextStyle(
+                              color: Colors.red,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
-            ),
+                  )
+                : AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 280),
+                    child: count == 0
+                        ? AddButton(
+                            key: const ValueKey('add'),
+                            onTap: increment,
+                          )
+                        : CounterControls(
+                            key: const ValueKey('counter'),
+                            count: count,
+                            onAdd: increment,
+                            onRemove: decrement,
+                            onCountTap: _showQuantityDialog,
+                          ),
+                  ),
           ],
         ),
       ),
