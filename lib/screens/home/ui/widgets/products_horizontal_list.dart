@@ -52,7 +52,7 @@ class _ProductHorizontalListState extends State<ProductHorizontalList> {
   Widget build(BuildContext context) {
     return SliverToBoxAdapter(
       child: SizedBox(
-        height: 257,
+        height: 265,
         child: loadingProducts
             ? HorizontalProductsShimmer()
             : ListView.builder(

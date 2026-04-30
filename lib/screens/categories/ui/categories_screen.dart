@@ -48,6 +48,8 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       child: Scaffold(
         backgroundColor: const Color(0xFFF6F7F9),
         appBar: AppBar(
+          leading: SizedBox(),
+
           title: const Text(
             'التصنيفات',
             style: TextStyle(fontWeight: FontWeight.w700),

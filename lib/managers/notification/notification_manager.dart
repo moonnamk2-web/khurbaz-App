@@ -191,9 +191,7 @@ class NotificationManager {
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-      print(
-        '-----------------------------------message.data.toString()--10000',
-      );
+      print('-----------------------------------FirebaseMessaging onMessage');
       String filePath = '';
 
       if (message.data['image_url'] != null) {

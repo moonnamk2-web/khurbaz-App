@@ -3,14 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart' as intl;
-import 'package:moona/screens/checkout/success_dialog.dart';
-import 'package:moona/screens/checkout/widget/payment_moyaser_web.dart';
+import 'package:moona/screens/checkout/payment_dialog.dart';
 import 'package:moona/utils/resources/app_colors.dart';
 import 'package:moona/utils/widgets/snackbar/failed_snackbar.dart';
 
 import '../../managers/server/cart/cart_api.dart';
-import '../../managers/server/payment_service.dart';
 import '../../utils/helper/navigation/push_to.dart';
+import '../../utils/widgets/currency.dart';
 import '../addresses/data/entities/address_entity.dart';
 import '../addresses/presentation/cubit/addresses_cubit.dart';
 import '../addresses/presentation/cubit/addresses_state.dart';
@@ -29,6 +28,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   bool checkoutLoading = false;
   String type = 'delivery';
   String time = 'now';
+  double totalAmount = 0;
   String executionTimeTime = '';
   DateTime? executionTime;
 
@@ -45,6 +45,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       child: Scaffold(
         backgroundColor: kScaffoldBackground,
         appBar: AppBar(
+          leading: IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: SvgPicture.asset('assets/images/arrow-right.svg'),
+          ),
           title: const Text(
             'إتمام الطلب',
             style: TextStyle(fontWeight: FontWeight.w700),
@@ -79,7 +85,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         if (!snapshot.hasData) {
                           return const SizedBox();
                         }
-
+                        totalAmount = snapshot.data!.grandTotal;
                         return OrderSummaryCard(summary: snapshot.data!);
                       },
                     ),
@@ -253,49 +259,37 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                               orElse: () => state.addresses.first,
                             );
 
-                            setState(() => checkoutLoading = true);
+                            // setState(() => checkoutLoading = true);
+                            //
 
-                            final paymentService = PaymentService();
+                            //
+                            // setState(() => checkoutLoading = false);
+                            //
+                            // if (!result['success']) {
+                            //   ScaffoldMessenger.of(context).showSnackBar(
+                            //     SnackBar(content: Text(result['message'])),
+                            //   );
+                            //   return;
+                            // }
 
-                            final result = await paymentService.startCheckout(
-                              addressId: selectedAddress.id,
-                            );
-
-                            setState(() => checkoutLoading = false);
-
-                            if (!result['success']) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(result['message'])),
-                              );
-                              return;
-                            }
-
-                            final verifyResult = await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => PaymentWebViewScreen(
-                                  executionTime: executionTime,
-                                  checkoutUrl: result['checkout_url'],
-                                  paymentId: result['payment_id'],
-                                ),
+                            // final verifyResult = await Navigator.push(
+                            //   context,
+                            //   MaterialPageRoute(
+                            //     builder: (_) => PaymentWebViewScreen(
+                            //       executionTime: executionTime,
+                            //       checkoutUrl: result['checkout_url'],
+                            //       paymentId: result['payment_id'],
+                            //     ),
+                            //   ),
+                            // );
+                            showDialog(
+                              context: context,
+                              builder: (_) => PaymentDialog(
+                                amount: totalAmount,
+                                selectedAddress: selectedAddress,
+                                executionTime: executionTime,
                               ),
                             );
-
-                            if (verifyResult != null &&
-                                verifyResult['success'] == true) {
-                              Navigator.pushNamedAndRemoveUntil(
-                                context,
-                                "main",
-                                (route) => false,
-                              );
-
-                              showDialog(
-                                context: context,
-                                builder: (_) => SuccessDialog(
-                                  orderId: verifyResult['order_id'],
-                                ),
-                              );
-                            }
                           },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: kMainColor,
@@ -347,20 +341,18 @@ class OrderSummaryCard extends StatelessWidget {
 
           const SizedBox(height: 10),
 
-          _SummaryRow('سعر المنتجات', '${summary.productsTotal} ﷼'),
+          _SummaryRow('سعر المنتجات', '${summary.productsTotal}'),
 
           const SizedBox(height: 10),
 
           _SummaryRow(
             'رسوم التوصيل',
-            summary.deliveryFee == 0
-                ? 'توصيل مجاني'
-                : '${summary.deliveryFee} ﷼',
+            summary.deliveryFee == 0 ? 'توصيل مجاني' : '${summary.deliveryFee}',
           ),
 
           if (summary.discountTotal > 0) ...[
             const SizedBox(height: 10),
-            _SummaryRow('الخصم', '- ${summary.discountTotal} ﷼'),
+            _SummaryRow('الخصم', '- ${summary.discountTotal}'),
           ],
 
           const Padding(
@@ -370,7 +362,7 @@ class OrderSummaryCard extends StatelessWidget {
 
           _SummaryRow(
             'الإجمالي',
-            '${summary.grandTotal} ﷼',
+            '${summary.grandTotal}',
             bold: true,
             highlight: true,
           ),
@@ -522,17 +514,22 @@ class _SummaryRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label),
+        Text(label, style: TextStyle(fontSize: 16)),
+        Spacer(),
         Text(
           value,
           style: TextStyle(
             fontWeight: bold ? FontWeight.w700 : FontWeight.w600,
-            color: highlight ? kMainColor : kTitleBodyColor,
-            fontSize: highlight ? 16 : 14,
+            color: label == 'الخصم'
+                ? Colors.red
+                : highlight
+                ? kMainColor
+                : kTitleBodyColor,
+            fontSize: highlight ? 18 : 16,
           ),
         ),
+        if (value != 'توصيل مجاني') Currency(isRed: label == 'الخصم'),
       ],
     );
   }

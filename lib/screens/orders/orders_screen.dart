@@ -82,6 +82,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
             ? Colors.white
             : const Color(0xFFF6F7F9),
         appBar: AppBar(
+          leading: SizedBox(),
           title: const Text(
             'طلباتي',
             style: TextStyle(fontWeight: FontWeight.w700),

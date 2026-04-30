@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../../managers/location_maneger.dart';
@@ -67,14 +67,14 @@ class _PickLocationMapScreenState extends State<PickLocationMapScreen> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         centerTitle: true,
-        leading: !widget.view
-            ? SizedBox()
-            : IconButton(
-                onPressed: () => Navigator.pop(context),
-                icon: Icon(Icons.arrow_back, color: Colors.white),
-              ),
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: SvgPicture.asset('assets/images/arrow-right.svg'),
+        ),
         title: Text(
-          'select on map',
+          'اختر من الخريطة',
           textAlign: TextAlign.center,
           style: TextStyle(
             fontFamily: 'DINNextLT',
@@ -128,9 +128,10 @@ class _PickLocationMapScreenState extends State<PickLocationMapScreen> {
                             ),
                             child: Center(
                               child: Text(
-                                'select',
-                                style: GoogleFonts.marhey(
+                                'تعيين',
+                                style: TextStyle(
                                   fontSize: 14,
+                                  fontFamily: 'DINNextLT',
                                   color: Colors.white,
                                   fontWeight: FontWeight.w700,
                                 ),

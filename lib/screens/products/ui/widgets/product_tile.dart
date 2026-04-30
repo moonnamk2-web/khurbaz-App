@@ -8,6 +8,7 @@ import '../../../../utils/network/network_routes.dart';
 import '../../../../utils/resources/app_colors.dart';
 import '../../../../utils/widgets/cach_network_image_widget.dart';
 import '../../../../utils/widgets/check_dialog.dart';
+import '../../../../utils/widgets/currency.dart';
 
 class ProductCartTile extends StatefulWidget {
   const ProductCartTile(this.product, {super.key});
@@ -156,13 +157,18 @@ class ProductCartTileState extends State<ProductCartTile> {
                     ),
                   ),
                   const SizedBox(height: 6),
-                  Text(
-                    '${widget.product.finalPrice} ﷼',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: kMainColor,
-                    ),
+                  Row(
+                    children: [
+                      Text(
+                        '${widget.product.finalPrice}',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black,
+                        ),
+                      ),
+                      Currency(),
+                    ],
                   ),
                 ],
               ),

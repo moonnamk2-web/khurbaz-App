@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:moona/screens/addresses/presentation/screens/widgets/pick_location_widget.dart';
+import 'package:moona/utils/widgets/snackbar/failed_snackbar.dart';
 
 import '../../../../utils/resources/app_colors.dart';
 import '../../../../utils/widgets/field.dart';
@@ -54,7 +55,13 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
 
   onSave() async {
     if (!key.currentState!.validate()) return;
-    if (location == null) return;
+    if (location == null) {
+      showFailedTopSnackBar(
+        context: context,
+        title: 'انتبه',
+        content: 'يحب تحديد العنوان أولا',
+      );
+    }
     // setState(() {
     //   loading = true;
     // });
@@ -95,7 +102,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
             onPressed: () {
               Navigator.pop(context);
             },
-            icon: SvgPicture.asset('assets/icons/arrow-right.svg'),
+            icon: SvgPicture.asset('assets/images/arrow-right.svg'),
           ),
           title: Padding(
             padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8),

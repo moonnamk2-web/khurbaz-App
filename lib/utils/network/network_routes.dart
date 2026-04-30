@@ -11,7 +11,7 @@ dynamic headersWithToken = {
   'Accept': 'application/json',
   'Authorization': 'Bearer ${AuthCubit.user?.token}',
 };
-const baseUrl = 'http://72.62.237.230/api';
+const baseUrl = 'https://moonastore.cloud/api';
 const userAuthBaseUrl = '$baseUrl/auth';
 const imagePathUrl = "http://72.62.237.230/images/";
 const categoriesImagePathUrl = "http://72.62.237.230/images/categories/";

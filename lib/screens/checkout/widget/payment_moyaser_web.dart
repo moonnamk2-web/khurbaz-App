@@ -52,19 +52,40 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
                   final paymentMoyasarId = parsed.queryParameters['id'];
                   final paymentLocalId = widget.paymentId;
 
-                  final result = await PaymentService().verifyPayment(
+                  Map<String, dynamic> result;
+                  result = await PaymentService().verifyPayment(
                     executionTime: widget.executionTime,
                     paymentLocalId: paymentLocalId,
                     paymentMoyasarId: paymentMoyasarId!,
                   );
+                  if (!result['success']) {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return Stack(
+                          children: [
+                            Center(
+                              child: Card(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Center(child: Text(result.toString())),
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  } else {
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      "main",
+                      (route) => false,
+                    );
+                  }
 
                   if (!mounted) return NavigationActionPolicy.CANCEL;
 
-                  Navigator.pushNamedAndRemoveUntil(
-                    context,
-                    "main",
-                    (route) => false,
-                  );
                   return NavigationActionPolicy.CANCEL;
                 }
 

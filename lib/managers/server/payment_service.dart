@@ -44,23 +44,77 @@ class PaymentService {
     required String paymentMoyasarId,
     required DateTime? executionTime,
   }) async {
-    final url = Uri.parse(
-      '$baseUrl/payment/verify/$paymentLocalId?id=$paymentMoyasarId&&${executionTime != null ? 'execution_time=${executionTime!.toIso8601String()}' : ""}',
-    );
+    try {
+      final url = Uri.parse(
+        '$baseUrl/payment/verify/$paymentLocalId?id=$paymentMoyasarId'
+        '${executionTime != null ? '&execution_time=${executionTime.toIso8601String()}' : ""}',
+      );
 
-    final response = await http.get(url, headers: headersWithToken);
+      print('🔵 URL: $url');
 
-    print('==========verifyPayment ${response.body}');
+      final response = await http.get(url, headers: headersWithToken);
 
-    final data = jsonDecode(response.body);
+      print('🟢 Status Code: ${response.statusCode}');
+      print('🟢 Response: ${response.body}');
 
-    if (response.statusCode == 200 && data['status'] == true) {
-      return {'success': true, 'order_id': data['order_id']};
+      final data = jsonDecode(response.body);
+
+      if (response.statusCode == 200 && data['status'] == true) {
+        return {'success': true, 'order_id': data['order_id']};
+      }
+
+      return {
+        'success': false,
+        'message': data['message'] ?? 'Payment not completed',
+      };
+    } catch (e, stackTrace) {
+      print('🔴 ERROR: $e');
+      print('🔴 STACK: $stackTrace');
+
+      return {'success': false, 'message': e.toString()};
     }
+  }
 
-    return {
-      'success': false,
-      'message': data['message'] ?? 'Payment not completed',
-    };
+  Future<Map<String, dynamic>> checkout({
+    required String addressId,
+    required String moyasarId,
+    required String paymentMethod,
+    required DateTime? executionTime,
+  }) async {
+    try {
+      final url = Uri.parse('$baseUrl/payment/checkout');
+
+      final body = jsonEncode({
+        'address_id': addressId,
+        'moyasar_id': moyasarId,
+        'payment_method': paymentMethod,
+        if (executionTime != null)
+          'execution_time': executionTime.toIso8601String(),
+      });
+
+      final response = await http.post(
+        url,
+        headers: headersWithToken,
+        body: body,
+      );
+      print('==========checkout ${response.body}');
+
+      final data = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        return {
+          'success': true,
+          'order_id': data['order_id'],
+          // 'payment_id': data['payment_id'],
+        };
+      } else {
+        return {'success': false, 'message': data['message']};
+      }
+    } catch (e, stackTrace) {
+      print('🔴 ERROR: $e');
+      print('🔴 STACK: $stackTrace');
+
+      return {'success': false, 'message': e.toString()};
+    }
   }
 }

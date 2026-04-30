@@ -31,6 +31,7 @@
         "google_maps_flutter",
         "http",
         "intl",
+        "moyasar",
         "salomon_bottom_bar",
         "shared_preferences",
         "shimmer",
@@ -64,6 +65,17 @@
         "stream_channel",
         "test_api",
         "vector_math"
+      ]
+    },
+    {
+      "name": "moyasar",
+      "version": "3.0.0",
+      "dependencies": [
+        "flutter",
+        "http",
+        "pay",
+        "plugin_platform_interface",
+        "webview_flutter"
       ]
     },
     {
@@ -422,6 +434,13 @@
         "stream_channel",
         "string_scanner",
         "term_glyph"
+      ]
+    },
+    {
+      "name": "plugin_platform_interface",
+      "version": "2.1.8",
+      "dependencies": [
+        "meta"
       ]
     },
     {
@@ -991,13 +1010,6 @@
       ]
     },
     {
-      "name": "plugin_platform_interface",
-      "version": "2.1.8",
-      "dependencies": [
-        "meta"
-      ]
-    },
-    {
       "name": "typed_data",
       "version": "1.4.0",
       "dependencies": [
@@ -1283,6 +1295,90 @@
       "name": "synchronized",
       "version": "3.4.0",
       "dependencies": []
+    },
+    {
+      "name": "webview_flutter",
+      "version": "4.13.1",
+      "dependencies": [
+        "flutter",
+        "webview_flutter_android",
+        "webview_flutter_platform_interface",
+        "webview_flutter_wkwebview"
+      ]
+    },
+    {
+      "name": "pay",
+      "version": "3.3.0",
+      "dependencies": [
+        "flutter",
+        "flutter_localizations",
+        "meta",
+        "pay_android",
+        "pay_ios",
+        "pay_platform_interface"
+      ]
+    },
+    {
+      "name": "pay_platform_interface",
+      "version": "2.0.0",
+      "dependencies": [
+        "flutter",
+        "yaml"
+      ]
+    },
+    {
+      "name": "pay_ios",
+      "version": "1.1.0",
+      "dependencies": [
+        "flutter",
+        "pay_platform_interface"
+      ]
+    },
+    {
+      "name": "pay_android",
+      "version": "3.2.0",
+      "dependencies": [
+        "flutter",
+        "flutter_localizations",
+        "pay_platform_interface"
+      ]
+    },
+    {
+      "name": "flutter_localizations",
+      "version": "0.0.0",
+      "dependencies": [
+        "flutter",
+        "intl",
+        "path"
+      ]
+    },
+    {
+      "name": "webview_flutter_platform_interface",
+      "version": "2.15.1",
+      "dependencies": [
+        "flutter",
+        "meta",
+        "plugin_platform_interface"
+      ]
+    },
+    {
+      "name": "webview_flutter_wkwebview",
+      "version": "3.24.2",
+      "dependencies": [
+        "flutter",
+        "meta",
+        "path",
+        "webview_flutter_platform_interface"
+      ]
+    },
+    {
+      "name": "webview_flutter_android",
+      "version": "4.10.15",
+      "dependencies": [
+        "flutter",
+        "meta",
+        "webview_flutter_platform_interface"
+      ]
     }
   ],
   "configVersion": 1

@@ -11,6 +11,7 @@ import '../../../../utils/helper/navigation/push_to.dart';
 import '../../../../utils/network/network_routes.dart';
 import '../../../../utils/resources/app_colors.dart';
 import '../../../../utils/widgets/cach_network_image_widget.dart';
+import '../../../../utils/widgets/currency.dart';
 import '../../../product_details/product_details_screen.dart';
 
 class ProductCard extends StatefulWidget {
@@ -168,7 +169,7 @@ class _ProductCardState extends State<ProductCard> {
         widget.onPop();
       },
       child: Container(
-        width: 150,
+        width: 160,
         margin: const EdgeInsets.only(right: 14),
         decoration: BoxDecoration(
           color: kContainerBackground,
@@ -225,9 +226,9 @@ class _ProductCardState extends State<ProductCard> {
                       children: [
                         // OLD PRICE (LINE THROUGH)
                         Text(
-                          '${widget.product.price} ﷼',
+                          '${widget.product.price}',
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 13,
                             fontWeight: FontWeight.w500,
                             color: Colors.grey.shade500,
                             decoration: TextDecoration.lineThrough,
@@ -236,23 +237,33 @@ class _ProductCardState extends State<ProductCard> {
                         const SizedBox(width: 4),
 
                         // DISCOUNT PRICE
-                        Text(
-                          '${widget.product.finalPrice} ﷼',
-                          style: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700,
-                            color: kMainColor,
-                          ),
+                        Row(
+                          children: [
+                            Text(
+                              '${widget.product.finalPrice}',
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w800,
+                                color: Colors.red,
+                              ),
+                            ),
+                            Currency(isRed: true),
+                          ],
                         ),
                       ],
                     )
-                  : Text(
-                      '${widget.product.price} ﷼',
-                      style: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                        color: kMainColor,
-                      ),
+                  : Row(
+                      children: [
+                        Text(
+                          '${widget.product.price}',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.black,
+                          ),
+                        ),
+                        Currency(),
+                      ],
                     ),
             ),
 
